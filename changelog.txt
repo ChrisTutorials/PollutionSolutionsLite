@@ -1,3 +1,17 @@
+Version: 1.0.21
+Date: 2024.11.04
+  Notes:
+    - Updated for Factorio 2.0 compatibility
+    - Changed factorio_version to "2.0" in info.json
+    - Updated base dependency to "base >= 2.0"
+    - Added comprehensive code documentation throughout all modules
+    - Created README.md with detailed mod overview and features
+    - Created TESTING.md with complete testing guide
+    - Added test infrastructure with unit tests and integration tests
+    - Documented all Lua files with detailed comments
+    - All existing functionality preserved for Factorio 2.0
+
+---------------------------------------------------------------------------------------------------
 Version: 1.0.20
 Date: 2023.03.27
   Notes:
