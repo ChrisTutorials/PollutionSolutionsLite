@@ -2,7 +2,7 @@ require "constants"
 
 local incinerator_recipe = util.table.deepcopy(data.raw['recipe']['nuclear-reactor'])
 incinerator_recipe.name = "toxic-incinerator"
-incinerator_recipe.result = "toxic-incinerator"
+incinerator_recipe.results = {{type="item", name="toxic-incinerator", amount=1}}
 incinerator_recipe.enabled = false
 incinerator_recipe.ingredients =
 {
@@ -15,38 +15,25 @@ incinerator_recipe.ingredients =
 
 local toxicturret_recipe = util.table.deepcopy(data.raw['recipe']['flamethrower-turret'])
 toxicturret_recipe.name = "toxic-turret"
-toxicturret_recipe.result = "toxic-turret"
+toxicturret_recipe.results = {{type="item", name="toxic-turret", amount=1}}
 toxicturret_recipe.enabled = false
 
 
 local lowheater_recipe = util.table.deepcopy(data.raw['recipe']['heat-exchanger'])
 lowheater_recipe.name = "low-heat-exchanger"
-lowheater_recipe.result = "low-heat-exchanger"
+lowheater_recipe.results = {{type="item", name="low-heat-exchanger", amount=1}}
 lowheater_recipe.enabled = false
 
 local emitter_recipe = util.table.deepcopy(data.raw['recipe']['storage-tank'])
 emitter_recipe.name = "dump-site"
 emitter_recipe.category = "crafting"
-emitter_recipe.ingredients = nil
 emitter_recipe.enabled = false
-emitter_recipe.normal = {
-  energy_required = 3,
-  ingredients = {
-    {type="item", name="pipe-to-ground", amount=2},
-    --{type="item", name="iron-axe", amount=1},
-  },
-  enabled = false,
-  result = "dump-site",
+emitter_recipe.energy_required = 3
+emitter_recipe.ingredients = {
+  {type="item", name="pipe-to-ground", amount=2},
+  --{type="item", name="iron-axe", amount=1},
 }
-emitter_recipe.expensive = {
-  energy_required = 3,
-  ingredients = {
-    {type="item", name="pipe-to-ground", amount=4},
-    --{type="item", name="iron-axe", amount=1},
-  },
-  enabled = false,
-  result = "dump-site",
-}
+emitter_recipe.results = {{type="item", name="dump-site", amount=1}}
 
 data:extend({
   incinerator_recipe,
