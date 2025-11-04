@@ -22,11 +22,11 @@ function copyData( _Type, _Name, _args )
   if _args then
     if( type(_args) == 'table' ) then
       -- Navigate through nested fields using array of keys
-      local data = data.raw[_Type][_Name]
+      local result = data.raw[_Type][_Name]
       for i=1, #_args, 1 do
-        data = data[_args[i]]
+        result = result[_args[i]]
       end
-      return util.table.deepcopy(data)
+      return util.table.deepcopy(result)
     else
       -- Single field access
       return util.table.deepcopy(data.raw[_Type][_Name][_args])

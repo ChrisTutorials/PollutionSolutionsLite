@@ -19,7 +19,7 @@ data = {
         }
       }
     },
-    ["entity"] = {
+    ["assembling-machine"] = {
       ["assembling-machine-1"] = {
         name = "assembling-machine-1",
         type = "assembling-machine",
