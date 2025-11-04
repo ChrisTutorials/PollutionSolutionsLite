@@ -1,5 +1,27 @@
+--[[
+  Settings Module for Pollution Solutions Lite
+  
+  This file defines all configurable settings for the mod.
+  Settings are divided into two categories:
+  - Startup settings: Affect prototypes and require game restart to change
+  - Runtime-global settings: Can be changed during gameplay via mod settings menu
+  
+  Setting Types:
+  - int-setting: Integer values with min/max constraints
+  - double-setting: Floating-point values with min/max constraints
+  
+  Categories:
+  - Fluid/Recipe Settings (a-*): Control conversion rates and energy values
+  - Xenomass Settings (b-*): Control alien loot drops and conversions
+  - Pollution Collection Settings: Control how pollution collectors work
+]]
+
 data:extend{
-  -- Startup
+  --===================--
+  -- Startup Settings  --
+  --===================--
+  -- These settings affect game prototypes and require restart to change
+  
   {
     type = "int-setting",
     name = "zpollution-air-per-sludge",
@@ -58,7 +80,11 @@ data:extend{
     order = "b-b"
   },
 
-  -- Runtime
+  --==========================--
+  -- Runtime-Global Settings  --
+  --==========================--
+  -- These settings can be changed during gameplay via mod settings menu
+  
   {
     type = "int-setting",
     name = "zpollution-collection-interval",
