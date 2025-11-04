@@ -57,6 +57,6 @@ data:extend({
       {type="item", name="red-xenomass", amount=10},
       {type="item", name="blue-xenomass", amount=100},
     },
-    result = "hev-armor"
+    results = {{type="item", name="hev-armor", amount=1}}
   },
 })

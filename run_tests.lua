@@ -6,8 +6,7 @@
   Usage: lua run_tests.lua
 ]]
 
-package.path = package.path .. ";?" .. "/home/chris/gamedev/mods/PollutionSolutionsLite/?.lua"
-package.path = package.path .. ";?" .. "/home/chris/gamedev/mods/PollutionSolutionsLite/?/init.lua"
+-- No special package paths needed - uses relative requires
 
 -- Global test results
 local testResults = {

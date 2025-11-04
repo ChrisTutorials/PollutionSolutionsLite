@@ -53,6 +53,6 @@ data:extend({
       {name="iron-gear-wheel",	amount=50},
       {name="pipe", 				amount=50},
     },
-    result= "pollutioncollector"
+    results = {{type="item", name="pollutioncollector", amount=1}}
   },
 })

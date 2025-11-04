@@ -4,6 +4,10 @@ Date: 2024.11.04
     - Updated for Factorio 2.0 compatibility
     - Changed factorio_version to "2.0" in info.json
     - Updated base dependency to "base >= 2.0"
+    - Fixed recipe format for Factorio 2.0 (removed normal/expensive difficulty modes)
+    - Converted all recipes from 'result' to 'results' array format
+    - Fixed hardcoded paths in test runner
+    - Added recipe validation script
     - Added comprehensive code documentation throughout all modules
     - Created README.md with detailed mod overview and features
     - Created TESTING.md with complete testing guide
