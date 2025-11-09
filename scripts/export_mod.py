@@ -9,8 +9,10 @@ ATTRIBUTION: This mod is based on Pollution Solutions by daniels1989.
 The version is a Factorio 2.0 port by ChrisTutorials.
 
 VERSIONING NOTE:
-  This script automatically increments the mod version (1.1.1 → 1.1.2 → 1.1.3, etc.)
+  This script automatically increments the mod version (1.1.0001 → 1.1.0002 → 1.1.0003, etc.)
   for internal development/testing builds.
+  
+  Format: 1.1.XXXX where XXXX is a 4-digit build counter (max 3 decimal places: 1.1.9999)
   
   IMPORTANT: Before releasing publicly, reset version to 1.1.0 in info.json
   See DEV_VERSION_NOTICE.md for details
@@ -209,37 +211,47 @@ class ModExporter:
         try:
             with open(info_path) as f:
                 info = json.load(f)
-                return info.get('version', '1.1.1')
+                return info.get('version', '1.1.0001')
         except Exception:
-            return '1.1.1'
+            return '1.1.0001'
     
     def get_next_version(self, dest_dir: Path) -> str:
-        """Get next incremental version (e.g., 1.1.1 -> 1.1.2 -> 1.1.3)"""
-        # Find all existing zips for this mod
+        """Get next incremental version (e.g., 1.1.0001 -> 1.1.0002 -> 1.1.0003)"""
+        # Find all existing zips for this mod in new format only (1.1.XXXX)
+        import re
         pattern = f"{self.mod_name}_1.1.*.zip"
         existing_zips = list(dest_dir.glob(pattern))
         
-        if not existing_zips:
-            # First export
-            return "1.1.1"
-        
-        # Find highest patch number
-        max_patch = 0
+        # Filter to only new format (1.1.0001, 1.1.0002, etc. - 4 digits after 1.1.)
+        new_format_zips = []
         for zip_file in existing_zips:
-            # Extract version from filename (e.g., "PollutionSolutionsLite_1.1.5.zip")
+            version_part = zip_file.stem.replace(f"{self.mod_name}_", "")
+            if re.match(r'^1\.1\.\d{4}$', version_part):
+                new_format_zips.append(zip_file)
+        
+        if not new_format_zips:
+            # First export
+            return "1.1.0001"
+        
+        # Find highest build counter
+        max_build = 0
+        for zip_file in new_format_zips:
+            # Extract version from filename (e.g., "PollutionSolutionsLite_1.1.0005.zip")
             filename = zip_file.stem  # Remove .zip
             version_part = filename.replace(f"{self.mod_name}_", "")
             
-            # Try to parse version (e.g., "1.1.5")
+            # Try to parse version (e.g., "1.1.0005")
             try:
                 parts = version_part.split('.')
-                if len(parts) == 3:
-                    patch_num = int(parts[2])
-                    max_patch = max(max_patch, patch_num)
+                if len(parts) == 3 and parts[0] == '1' and parts[1] == '1':
+                    # Format is 1.1.XXXX
+                    build_num = int(parts[2])
+                    max_build = max(max_build, build_num)
             except (ValueError, IndexError):
                 pass
         
-        return f"1.1.{max_patch + 1}"
+        # Format with 4 digits, zero-padded
+        return f"1.1.{max_build + 1:04d}"
     
     def update_info_version(self, version: str) -> bool:
         """Update version in info.json"""
