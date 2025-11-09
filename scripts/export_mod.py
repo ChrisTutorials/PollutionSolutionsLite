@@ -197,45 +197,42 @@ class ModExporter:
                 shutil.copy2(item, dest_path)
     
     def get_mod_version(self) -> str:
-        """Read mod version from info.json and extract base version (without dev number)"""
+        """Read mod version from info.json"""
         info_path = self.mod_source_dir / 'info.json'
         try:
             with open(info_path) as f:
                 info = json.load(f)
-                version = info.get('version', '1.1.0')
-                # Strip dev suffix if present (e.g., 1.1.0dev5 -> 1.1.0)
-                if 'dev' in version:
-                    version = version.split('dev')[0]
-                return version
+                return info.get('version', '1.1.1')
         except Exception:
-            return '1.1.0'
+            return '1.1.1'
     
-    def get_next_version(self, base_version: str, dest_dir: Path) -> str:
-        """Get next incremental dev version (e.g., 1.1.0 -> 1.1.0dev1 -> 1.1.0dev2)"""
-        # Find all existing zips with this base version using dev pattern
-        pattern = f"{self.mod_name}_{base_version}dev*.zip"
+    def get_next_version(self, dest_dir: Path) -> str:
+        """Get next incremental version (e.g., 1.1.1 -> 1.1.2 -> 1.1.3)"""
+        # Find all existing zips for this mod
+        pattern = f"{self.mod_name}_1.1.*.zip"
         existing_zips = list(dest_dir.glob(pattern))
         
         if not existing_zips:
-            # First export of this version
-            return f"{base_version}dev1"
+            # First export
+            return "1.1.1"
         
-        # Find highest dev number
-        max_dev = 0
+        # Find highest patch number
+        max_patch = 0
         for zip_file in existing_zips:
-            # Extract version from filename (e.g., "PollutionSolutionsLite_1.1.0dev2.zip")
+            # Extract version from filename (e.g., "PollutionSolutionsLite_1.1.5.zip")
             filename = zip_file.stem  # Remove .zip
             version_part = filename.replace(f"{self.mod_name}_", "")
             
-            # Try to parse dev version (e.g., "1.1.0dev2")
-            if "dev" in version_part:
-                try:
-                    dev_num = int(version_part.split("dev")[1])
-                    max_dev = max(max_dev, dev_num)
-                except (ValueError, IndexError):
-                    pass
+            # Try to parse version (e.g., "1.1.5")
+            try:
+                parts = version_part.split('.')
+                if len(parts) == 3:
+                    patch_num = int(parts[2])
+                    max_patch = max(max_patch, patch_num)
+            except (ValueError, IndexError):
+                pass
         
-        return f"{base_version}dev{max_dev + 1}"
+        return f"1.1.{max_patch + 1}"
     
     def update_info_version(self, version: str) -> bool:
         """Update version in info.json"""
@@ -275,9 +272,8 @@ class ModExporter:
     
     def create_archive(self, mod_dest: Path) -> bool:
         """Create zip archive of the exported mod with incremental versioning"""
-        base_version = self.get_mod_version()
         dest_parent = mod_dest.parent
-        version = self.get_next_version(base_version, dest_parent)
+        version = self.get_next_version(dest_parent)
         
         # Update info.json in source directory
         self.update_info_version(version)
