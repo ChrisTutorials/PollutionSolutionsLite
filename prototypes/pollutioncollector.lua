@@ -14,7 +14,8 @@ pollutioncollector.icon = GRAPHICS .. "icons/pollution-collector.png"
 pollutioncollector.icon_size = 64
 -- Replace main entity sprite with pollution collector sprite
 -- Storage-tank entity handles 4-way rotation automatically
--- NOTE: Must override inherited frames=2 property - we only have 1 frame per sprite
+-- NOTE: Single sprite used for all 4 rotations - storage-tank repeats it
+-- frames=1, line_length=1 ensures we use the same sprite for all directions
 pollutioncollector.pictures = {
   picture = {
     sheets = {
@@ -24,6 +25,8 @@ pollutioncollector.pictures = {
         width = 220,
         height = 108,
         frames = 1,
+        frame_count = 1,
+        line_length = 1,
       },
       {
         filename = GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png",
@@ -31,6 +34,8 @@ pollutioncollector.pictures = {
         width = 438,
         height = 215,
         frames = 1,
+        frame_count = 1,
+        line_length = 1,
         scale = 0.5,
       },
     },
