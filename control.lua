@@ -266,13 +266,13 @@ function EntityDied(event)
           event.cause.type .. " from force " .. event.force.name .. " killed " .. alien.name .. "."
         )
       end
-      -- Factorio 2.0+ API: spill_item_stack requires items as array: {{name=..., count=...}}
-      alien.surface.spill_item_stack({position = alien.position, items = {loot}})
+      -- Factorio 2.0+ API: spill_item_stack requires stack parameter with count
+      alien.surface.spill_item_stack({ position = alien.position, stack = loot, force = alien.force })
       return
     else
       -- Normal kills spawn neutral loot
-      -- Factorio 2.0+ API: spill_item_stack requires items as array: {{name=..., count=...}}
-      alien.surface.spill_item_stack({position = alien.position, items = {loot}})
+      -- Factorio 2.0+ API: spill_item_stack requires stack parameter with count
+      alien.surface.spill_item_stack({ position = alien.position, stack = loot, force = nil })
     end
   end
 end
