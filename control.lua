@@ -69,10 +69,10 @@ end)
 ---during mod initialization or when configuration changes
 function PollutionSolutions.InitGlobals()
   -- Initialize global tracking tables
-  global.toxicDumps = {} -- Array of toxic dump positions
-  global.collectors = {} -- Map of unit_number -> collector entity
-  global.spilledLoot = {} -- Map of loot entity -> force (for force assignment)
-  global.lootToCheck = {} -- Queue for loot entities to validate
+  storage.toxicDumps = {} -- Array of toxic dump positions
+  storage.collectors = {} -- Map of unit_number -> collector entity
+  storage.spilledLoot = {} -- Map of loot entity -> force (for force assignment)
+  storage.lootToCheck = {} -- Queue for loot entities to validate
 
   --[[
   -- Disabled: Force technology refresh (kept for reference)
@@ -97,7 +97,7 @@ function PollutionSolutions.InitGlobals()
     for _, entity in
       pairs(surface.find_entities_filtered({ name = { "red-xenomass", "blue-xenomass" } }))
     do
-      global.spilledLoot[entity] = game.forces.neutral
+      storage.spilledLoot[entity] = game.forces.neutral
     end
   end
 end
@@ -195,14 +195,14 @@ function EntityDied(event)
   end
 
   -- Initialize globals if needed
-  if global.nestsKilled == nil then
-    global.nestsKilled = 0
+  if storage.nestsKilled == nil then
+    storage.nestsKilled = 0
   end
-  if global.spilledLoot == nil then
-    global.spilledLoot = {}
+  if storage.spilledLoot == nil then
+    storage.spilledLoot = {}
   end
-  if global.lootToCheck == nil then
-    global.lootToCheck = {}
+  if storage.lootToCheck == nil then
+    storage.lootToCheck = {}
   end
 
   local loot = { name = "", count = 0 }
@@ -232,8 +232,8 @@ function EntityDied(event)
     loot = { name = "blue-xenomass", count = math.floor(quantity + 0.5) }
   elseif alien.type == "unit-spawner" then
     -- Spawners drop red xenomass, amount decreases with each nest killed
-    global.nestsKilled = global.nestsKilled + 1
-    quantity = settings.global["zpollution-red-per-alien"].value / global.nestsKilled
+    storage.nestsKilled = storage.nestsKilled + 1
+    quantity = settings.global["zpollution-red-per-alien"].value / storage.nestsKilled
     loot = { name = "red-xenomass", count = math.ceil(quantity) }
   end
 
@@ -350,16 +350,16 @@ end
 ---Add a toxic dump to global tracking
 ---@param entity LuaEntity The toxic dump entity to track
 function AddToxicDump(entity)
-  table.insert(global.toxicDumps, { position = entity.position, surface = entity.surface })
+  table.insert(storage.toxicDumps, { position = entity.position, surface = entity.surface })
 end
 
 ---Remove a toxic dump from global tracking and disperse its contents
 ---@param entity LuaEntity The toxic dump entity to remove
 function RemoveToxicDump(entity)
-  for key, _DatabaseEntity in pairs(global.toxicDumps) do
+  for key, _DatabaseEntity in pairs(storage.toxicDumps) do
     if IsPositionEqual(entity, _DatabaseEntity) then
       DisperseCollectedPollution(entity, _DatabaseEntity.surface, entity.position)
-      table.remove(global.toxicDumps, key)
+      table.remove(storage.toxicDumps, key)
       break
     end
   end
@@ -376,11 +376,11 @@ end
 ---Dumps release stored pollution fluids into the air with visual effects
 ---@param event EventData Event data from on_tick
 function OnTick_ToxicDumps(event)
-  if global.toxicDumps == nil or not next(global.toxicDumps) then
+  if storage.toxicDumps == nil or not next(storage.toxicDumps) then
     return
   end
 
-  for k, v in pairs(global.toxicDumps) do
+  for k, v in pairs(storage.toxicDumps) do
     -- Find the toxic dump entity at the stored position
     local entities = v.surface.find_entities_filtered({
       area = { { v.position.x - 0.25, v.position.y - 0.25 }, {
@@ -479,14 +479,14 @@ end
 ---Add a pollution collector to global tracking
 ---@param entity LuaEntity The pollution collector entity to track
 function AddPollutionCollector(entity)
-  global.collectors[entity.unit_number] = entity
+  storage.collectors[entity.unit_number] = entity
 end
 
 ---Remove a pollution collector from tracking and disperse its contents
 ---@param entity LuaEntity The pollution collector entity to remove
 function RemovePollutionCollector(entity)
   DisperseCollectedPollution(entity, entity.surface, entity.position)
-  global.collectors[entity.unit_number] = nil
+  storage.collectors[entity.unit_number] = nil
 end
 
 ---Collect pollution from surrounding chunks and convert to polluted-air fluid
@@ -574,15 +574,15 @@ end
 ---Process all pollution collectors each tick interval
 ---@param event EventData Event data from on_tick
 function OnTick_PollutionCollectors(event)
-  if global.collectors == nil or not next(global.collectors) then
+  if storage.collectors == nil or not next(storage.collectors) then
     return
   end
-  for unit_number, entity in pairs(global.collectors) do
+  for unit_number, entity in pairs(storage.collectors) do
     if entity.valid then
       CollectPollution(entity, entity.surface)
     else
       -- Entity no longer exists, remove from tracking
-      global.collectors[unit_number] = nil
+      storage.collectors[unit_number] = nil
     end
   end
 end

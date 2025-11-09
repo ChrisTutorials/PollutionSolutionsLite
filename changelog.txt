@@ -1,3 +1,16 @@
+Version: 1.1.0
+Date: 2025.11.09
+  Notes:
+    - Factorio 2.0 API migration - replaced deprecated 'global' table with 'storage'
+    - Fixed sprite rectangle errors for pollution-collector, flamethrower-fire-stream, and incinerator entities
+    - Set explicit frame counts on animated sprites to prevent graphical glitches
+    - Removed GUI-only properties (water_reflection, window_background) from entity prototypes
+    - Added ChrisTutorials to mod authors
+    - Enhanced export script with tar.gz archive creation
+    - Expanded test coverage with global→storage validation and frames property detection
+    - Game starts successfully on new save without runtime errors
+
+---------------------------------------------------------------------------------------------------
 Version: 1.0.21
 Date: 2024.11.04
   Notes:

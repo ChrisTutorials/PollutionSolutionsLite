@@ -135,9 +135,14 @@ For detailed information about the code structure, testing procedures, and devel
 
 - **Original Author**: daniels1989
 - **Contributors**: Tynatyna, Keyboarg91, Thalassicus
-- **Forked From**: PollutionSolutionsFork
-- **Current Version**: 1.0.21 (Factorio 2.0 compatible - Untested)
+- **Factorio 2.0 Port**: ChrisTutorials
+- **Previous Maintainers**: Based on PollutionSolutionsFork and PollutionSolutions
+- **Current Version**: 1.1.0 (Factorio 2.0 compatible)
 
 ## License
 
-This mod is released for the Factorio community. See individual file headers for specific attribution.
+This mod is released under the same terms as the original Pollution Solutions mod.
+The work includes significant modifications and a complete port to Factorio 2.0 API.
+All code modifications are provided as-is for the Factorio community.
+
+**Attribution Required**: When using, modifying, or redistributing this mod, please credit the original authors (daniels1989 and contributors) in addition to current maintainers.

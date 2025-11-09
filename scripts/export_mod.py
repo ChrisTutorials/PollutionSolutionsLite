@@ -5,10 +5,13 @@ Export PollutionSolutionsLite mod to Factorio mods directory
 This script copies the mod files to the Factorio mods directory, excluding
 development files (.git, tests, docs, etc.)
 
+ATTRIBUTION: This mod is based on Pollution Solutions by daniels1989.
+The version is a Factorio 2.0 port by ChrisTutorials.
+
 Usage:
     python export_mod.py [destination_path]
-    
-    If no destination provided, uses symlink (factorio-export/) or 
+
+    If no destination provided, uses symlink (factorio-export/) or
     default Factorio mods directory based on OS.
 """
 
@@ -16,6 +19,8 @@ import os
 import sys
 import shutil
 import platform
+import zipfile
+import json
 from pathlib import Path
 from typing import Optional
 import subprocess
@@ -46,7 +51,17 @@ class ModExporter:
             '__pycache__',
             '*.pyc',
             '.vscode',
-            '.idea'
+            '.idea',
+            '.venv',
+            'venv',
+            '.editorconfig',
+            '.luarc.json',
+            '.markdownlintignore',
+            '.stylua.toml',
+            'PROJECT_STRUCTURE.md',
+            'validate_config.sh',
+            '*.zip',
+            '*.tar.gz'
         ]
         
         # Load config if available
@@ -181,6 +196,36 @@ class ModExporter:
                 dest_path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(item, dest_path)
     
+    def get_mod_version(self) -> str:
+        """Read mod version from info.json"""
+        info_path = self.mod_source_dir / 'info.json'
+        try:
+            with open(info_path) as f:
+                info = json.load(f)
+                return info.get('version', '0.0.0')
+        except Exception:
+            return '0.0.0'
+    
+    def create_archive(self, mod_dest: Path) -> bool:
+        """Create zip archive of the exported mod"""
+        version = self.get_mod_version()
+        archive_name = f"{self.mod_name}_{version}.zip"
+        archive_path = mod_dest.parent / archive_name
+        
+        print(f"\nCreating archive: {archive_name}")
+        try:
+            with zipfile.ZipFile(archive_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                for file_path in mod_dest.rglob('*'):
+                    if file_path.is_file():
+                        arcname = self.mod_name / file_path.relative_to(mod_dest)
+                        zipf.write(file_path, arcname)
+            
+            print(f"✓ Archive created: {archive_path}")
+            return True
+        except Exception as e:
+            print(f"✗ Failed to create archive: {e}")
+            return False
+    
     def export(self, destination: Optional[str] = None) -> bool:
         """Export mod to destination directory"""
         dest_dir = self.get_destination_dir(destination)
@@ -237,6 +282,9 @@ class ModExporter:
                     break
                 print(f"  {item.name}")
                 count += 1
+            
+            # Create tar.gz archive
+            self.create_archive(mod_dest)
             
             return True
         else:
