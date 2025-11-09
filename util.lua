@@ -93,7 +93,14 @@ function setLayerGraphics(layer, filename, hr_filename)
   assert(layer, "Layer cannot be nil")
   layer.filename = filename
   if hr_filename and layer.hr_version then
+    -- Only set HR dimensions/scale if HR image is actually provided
     layer.hr_version.filename = hr_filename
+    -- HR version must be 2x dimensions with 0.5 scale for proper rendering
+    if layer.width and layer.height then
+      layer.hr_version.width = layer.width * 2
+      layer.hr_version.height = layer.height * 2
+      layer.hr_version.scale = 0.5
+    end
   end
 end
 
