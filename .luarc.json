@@ -1,0 +1,32 @@
+{
+  "runtime.version": "Lua 5.1",
+  "diagnostics": {
+    "disable": [
+      "undefined-field"
+    ],
+    "globals": [
+      "game",
+      "script",
+      "mods",
+      "commands",
+      "data",
+      "util",
+      "global",
+      "defines",
+      "log",
+      "flare_stack"
+    ],
+    "undefined-global": true,
+    "unused-local": true,
+    "unused-function": true,
+    "empty-block": false
+  },
+  "workspace": {
+    "library": [
+      "${3rd}/factorio_annotations.lua"
+    ]
+  },
+  "type": {
+    "castNumberToInteger": true
+  }
+}

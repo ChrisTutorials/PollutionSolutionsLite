@@ -10,6 +10,8 @@
         "editor.formatOnPaste": true
     },
     "stylua.search_parent_directories": true,
-    "Lua.diagnostics.globals": ["game", "script", "mods", "commands", "data", "util", "global"],
-    "Lua.workspace.library": ["${workspaceFolder}/factorio_annotations.lua"]
+    "Lua.diagnostics.disable": ["undefined-field"],
+    "Lua.diagnostics.globals": ["game", "script", "mods", "commands", "data", "util", "global", "defines", "log", "flare_stack"],
+    "Lua.workspace.library": ["${workspaceFolder}/factorio_annotations.lua"],
+    "Lua.runtime.version": "Lua 5.1"
 }
