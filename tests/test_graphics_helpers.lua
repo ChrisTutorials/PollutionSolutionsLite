@@ -55,10 +55,12 @@ end
 
 function tests.test_setLayerGraphics_nil_layer_fails()
   local success, err = pcall(function()
+    ---@diagnostic disable-next-line: param-type-mismatch
     setLayerGraphics(nil, "test.png", "hr-test.png")
   end)
   TestUtils.assert(not success, "Should fail when layer is nil")
   TestUtils.assert(
+    ---@diagnostic disable-next-line: param-type-mismatch
     string.find(err, "Layer cannot be nil") ~= nil,
     "Should have meaningful error message"
   )
@@ -87,6 +89,7 @@ function tests.test_setDirectionalGraphics_missing_direction_fails()
   end)
   TestUtils.assert(not success, "Should fail when direction doesn't exist")
   TestUtils.assert(
+    ---@diagnostic disable-next-line: param-type-mismatch
     string.find(err, "Structure.north.layers not found") ~= nil,
     "Should have meaningful error message"
   )
@@ -165,6 +168,7 @@ function tests.test_setAllDirectionalGraphics_missing_direction_fails()
   end)
   TestUtils.assert(not success, "Should fail when a direction is missing")
   TestUtils.assert(
+    ---@diagnostic disable-next-line: param-type-mismatch
     string.find(err, "Structure.west.layers not found") ~= nil,
     "Should indicate which direction is missing"
   )
@@ -172,10 +176,12 @@ end
 
 function tests.test_setAllDirectionalGraphics_nil_structure_fails()
   local success, err = pcall(function()
+    ---@diagnostic disable-next-line: param-type-mismatch
     setAllDirectionalGraphics(nil, "entity/test/")
   end)
   TestUtils.assert(not success, "Should fail when structure is nil")
   TestUtils.assert(
+    ---@diagnostic disable-next-line: param-type-mismatch
     string.find(err, "Structure cannot be nil") ~= nil,
     "Should have meaningful error message"
   )

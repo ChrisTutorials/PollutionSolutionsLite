@@ -67,6 +67,7 @@ function tests.test_helper_functions_fail_fast()
     setLayerGraphics(nil, "test.png", nil)
   end)
   TestUtils.assert(not success, "Should fail with nil layer")
+  ---@diagnostic disable-next-line: param-type-mismatch
   TestUtils.assert(
     string.find(tostring(err), "Layer cannot be nil") ~= nil,
     "Should have meaningful error"
@@ -78,6 +79,7 @@ function tests.test_helper_functions_fail_fast()
     setAllDirectionalGraphics(nil, "test/")
   end)
   TestUtils.assert(not success2, "Should fail with nil structure")
+  ---@diagnostic disable-next-line: param-type-mismatch
   TestUtils.assert(
     string.find(tostring(err2), "Structure cannot be nil") ~= nil,
     "Should have meaningful error"
@@ -108,6 +110,7 @@ function tests.test_missing_function_detection()
   TestUtils.assert(not success, "Should fail when function is not defined")
   -- Cast err to string for type safety - pcall returns unknown type
   local errStr = tostring(err)
+  ---@diagnostic disable-next-line: param-type-mismatch
   TestUtils.assert(
     (string.find(errStr, "nil value") ~= nil) or (string.find(errStr, "setLayerGraphics") ~= nil),
     "Error should mention the missing function"
