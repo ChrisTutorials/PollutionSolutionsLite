@@ -82,3 +82,49 @@ function Set (list)
   for _, l in ipairs(list) do set[l] = true end
   return set
 end
+
+---Set graphics filename on a layer, with optional high-resolution version
+---@param layer table The layer object to modify
+---@param filename string The base graphics filename
+---@param hr_filename string|nil Optional high-resolution filename
+function setLayerGraphics(layer, filename, hr_filename)
+  assert(layer, "Layer cannot be nil")
+  layer.filename = filename
+  if hr_filename and layer.hr_version then
+    layer.hr_version.filename = hr_filename
+  end
+end
+
+---Set graphics for a directional structure (north, east, south, west)
+---@param structure table The structure with directional layers
+---@param direction string The direction: "north", "east", "south", or "west"
+---@param filename string The base graphics filename
+---@param hr_filename string|nil Optional high-resolution filename
+function setDirectionalGraphics(structure, direction, filename, hr_filename)
+  assert(structure and structure[direction] and structure[direction].layers, 
+    "Structure." .. direction .. ".layers not found")
+  setLayerGraphics(structure[direction].layers[1], filename, hr_filename)
+end
+
+---Set graphics for all four directions of a structure
+---@param structure table The structure with directional layers
+---@param base_path string Base path for graphics (e.g., "entity/low-heat-exchanger/")
+function setAllDirectionalGraphics(structure, base_path)
+  assert(structure, "Structure cannot be nil")
+  
+  -- Verify all directions exist
+  assert(structure.north and structure.north.layers, "Structure.north.layers not found")
+  assert(structure.east and structure.east.layers, "Structure.east.layers not found")
+  assert(structure.south and structure.south.layers, "Structure.south.layers not found")
+  assert(structure.west and structure.west.layers, "Structure.west.layers not found")
+  
+  -- Set filenames for each direction
+  setLayerGraphics(structure.north.layers[1], GRAPHICS .. base_path .. "lowheatex-N-idle.png", 
+    GRAPHICS .. base_path .. "hr-lowheatex-N-idle.png")
+  setLayerGraphics(structure.east.layers[1], GRAPHICS .. base_path .. "lowheatex-E-idle.png",
+    GRAPHICS .. base_path .. "hr-lowheatex-E-idle.png")
+  setLayerGraphics(structure.south.layers[1], GRAPHICS .. base_path .. "lowheatex-S-idle.png",
+    GRAPHICS .. base_path .. "hr-lowheatex-S-idle.png")
+  setLayerGraphics(structure.west.layers[1], GRAPHICS .. base_path .. "lowheatex-W-idle.png",
+    GRAPHICS .. base_path .. "hr-lowheatex-W-idle.png")
+end

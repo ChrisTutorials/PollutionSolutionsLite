@@ -66,6 +66,22 @@ else
 end
 
 print()
+
+-- Run test_graphics_helpers
+print("Loading test_graphics_helpers.lua...")
+local success_graphics, error_graphics = pcall(function()
+  local test_graphics = require("tests.test_graphics_helpers")
+end)
+
+if not success_graphics then
+  print("✗ FAILED to load test_graphics_helpers: " .. tostring(error_graphics))
+  testResults.totalFailed = testResults.totalFailed + 1
+else
+  print("✓ test_graphics_helpers completed successfully")
+  testResults.totalPassed = testResults.totalPassed + 1
+end
+
+print()
 print("========================================")
 print("Test Execution Summary")
 print("========================================")
