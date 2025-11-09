@@ -110,11 +110,18 @@ end
 ---Registers toxic dumps and pollution collectors when built
 ---@param event EventData Event data containing created_entity
 function OnBuiltEntity(event)
-  if IsToxicDump(event.created_entity) then
-    AddToxicDump(event.created_entity)
+  local entity = event.created_entity
+  
+  -- Defensive check: ensure entity exists and is valid
+  if not entity or not entity.valid then
+    return
   end
-  if IsPollutionCollector(event.created_entity) then
-    AddPollutionCollector(event.created_entity)
+  
+  if IsToxicDump(entity) then
+    AddToxicDump(entity)
+  end
+  if IsPollutionCollector(entity) then
+    AddPollutionCollector(entity)
   end
 end
 
@@ -158,6 +165,9 @@ end
 ---@param _DatabaseEntity table Table with position and surface fields
 ---@return boolean True if positions match
 function IsPositionEqual(entity, _DatabaseEntity)
+  if not entity or not entity.valid or not _DatabaseEntity then
+    return false
+  end
   --error("Is surface equal: "..tostring(entity.surface == _DatabaseEntity.surface).."\nIs Xpos equal: "..tostring(entity.position.x == _DatabaseEntity.position.x).."\nIs Ypos equal: "..tostring(entity.position.y == _DatabaseEntity.position.y).."\n\nSurface: "..tostring(entity.surface).." == "..tostring(_DatabaseEntity.surface).." ("..tostring(entity.position.x)..", "..tostring(entity.position.y)..") == ("..tostring(_DatabaseEntity.position.x)..", "..tostring(_DatabaseEntity.position.y)..")")
   return entity.surface == _DatabaseEntity.surface
     and entity.position.x == _DatabaseEntity.position.x
@@ -270,7 +280,7 @@ end
 ---@param entity LuaEntity The entity to check
 ---@return boolean True if entity is from alien force
 function IsAlienForce(entity)
-  if entity.force == nil then
+  if not entity or not entity.valid or not entity.force then
     return false
   end
 
@@ -369,6 +379,9 @@ end
 ---@param entity LuaEntity The entity to check
 ---@return boolean True if entity is a toxic dump
 function IsToxicDump(entity)
+  if not entity or not entity.valid then
+    return false
+  end
   return entity.name == TOXIC_DUMP_NAME
 end
 
@@ -473,6 +486,9 @@ end
 ---@param entity LuaEntity The entity to check
 ---@return boolean True if entity is a pollution collector
 function IsPollutionCollector(entity)
+  if not entity or not entity.valid then
+    return false
+  end
   return entity.name == POLLUTION_COLLECTOR_NAME
 end
 
