@@ -35,11 +35,6 @@ setLayerGraphics(
   GRAPHICS .. "entity/incinerator/incinerator.png",
   GRAPHICS .. "entity/incinerator/hr-incinerator.png"
 )
--- Fix HR sprite dimensions to match actual file size (302x318, not 308x316)
-if incinerator.picture.layers[1].hr_version then
-  incinerator.picture.layers[1].hr_version.width = 302
-  incinerator.picture.layers[1].hr_version.height = 318
-end
 
 assert(incinerator.working_light_picture, "Incinerator working_light_picture not found")
 setLayerGraphics(
@@ -47,9 +42,6 @@ setLayerGraphics(
   GRAPHICS .. "entity/incinerator/reactor-lights-color.png",
   GRAPHICS .. "entity/incinerator/hr-reactor-lights-color.png"
 )
--- Fix HR lights sprite to match actual file size (320x320, not 320x320 which is correct)
-incinerator.working_light_picture.hr_version.width = 320
-incinerator.working_light_picture.hr_version.height = 320
 incinerator.light_color = { r = 0.744, g = 0.275, b = 0.867 }
 incinerator.heat_buffer.max_temperature = 615
 
