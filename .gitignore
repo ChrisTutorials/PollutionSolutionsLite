@@ -2,3 +2,7 @@
 factorio/
 scripts/validate_config.yaml
 scripts/validate_config.sh
+scripts/__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

@@ -25,6 +25,21 @@ setLayerGraphics(
   GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
   GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png"
 )
+
+-- Reset sprite dimensions to match our custom 220x108 image
+-- Base game storage-tank has different dimensions that don't apply
+local sheet = pollutioncollector.pictures.picture.sheets[1]
+sheet.width = 220
+sheet.height = 108
+sheet.frame_count = 1
+sheet.line_length = 1
+if sheet.hr_version then
+  sheet.hr_version.width = 220
+  sheet.hr_version.height = 108
+  sheet.hr_version.frame_count = 1
+  sheet.hr_version.line_length = 1
+end
+
 pollutioncollector.fluid_box.filter = "polluted-air"
 for i = 1, #pollutioncollector.fluid_box.pipe_connections, 1 do
   pollutioncollector.fluid_box.pipe_connections[i].flow_direction = "input-output"
