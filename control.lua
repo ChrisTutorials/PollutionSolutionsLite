@@ -111,12 +111,12 @@ end
 ---@param event EventData Event data containing created_entity
 function OnBuiltEntity(event)
   local entity = event.created_entity
-  
+
   -- Defensive check: ensure entity exists and is valid
   if not entity or not entity.valid then
     return
   end
-  
+
   if IsToxicDump(entity) then
     AddToxicDump(entity)
   end
@@ -266,11 +266,13 @@ function EntityDied(event)
           event.cause.type .. " from force " .. event.force.name .. " killed " .. alien.name .. "."
         )
       end
-      alien.surface.spill_item_stack(alien.position, loot, true, event.force)
+      -- Factorio 2.0+ API: spill_item_stack uses single table argument with position and items
+      alien.surface.spill_item_stack({position = alien.position, items = loot})
       return
     else
       -- Normal kills spawn neutral loot
-      alien.surface.spill_item_stack(alien.position, loot, true)
+      -- Factorio 2.0+ API: spill_item_stack uses single table argument with position and items
+      alien.surface.spill_item_stack({position = alien.position, items = loot})
     end
   end
 end
@@ -396,10 +398,13 @@ function OnTick_ToxicDumps(event)
   for k, v in pairs(storage.toxicDumps) do
     -- Find the toxic dump entity at the stored position
     local entities = v.surface.find_entities_filtered({
-      area = { { v.position.x - 0.25, v.position.y - 0.25 }, {
-        v.position.x + 0.25,
-        v.position.y + 0.25,
-      } },
+      area = {
+        { v.position.x - 0.25, v.position.y - 0.25 },
+        {
+          v.position.x + 0.25,
+          v.position.y + 0.25,
+        },
+      },
       name = TOXIC_DUMP_NAME,
     })
 
@@ -423,9 +428,8 @@ function OnTick_ToxicDumps(event)
 
           -- Calculate how much to release based on fluid type and consume percentage
           if storedFluid.name == POLLUTED_AIR_NAME then
-            pollutionToDump = storedFluid.amount * (
-                1 - (TOXIC_DUMP_CONSUME_PERCENT / AIR_PER_SLUDGE)
-              )
+            pollutionToDump = storedFluid.amount
+              * (1 - (TOXIC_DUMP_CONSUME_PERCENT / AIR_PER_SLUDGE))
           elseif storedFluid.name == TOXIC_SLUDGE_NAME then
             pollutionToDump = storedFluid.amount * (1 - TOXIC_DUMP_CONSUME_PERCENT)
           end
@@ -579,7 +583,8 @@ function GetPollutionNeighbors(surface, position)
       neighbors[nearX][nearY].maxCollection = math.max(
         0,
         (
-          neighbors[nearX][nearY].pollution - settings.global["zpollution-pollution-remaining"].value
+          neighbors[nearX][nearY].pollution
+          - settings.global["zpollution-pollution-remaining"].value
         ) / settings.global["zpollution-collectors-required"].value
       )
     end
