@@ -215,7 +215,7 @@ function EntityDied(event)
     storage.lootToCheck = {}
   end
 
-  local loot = { name = "", count = 0 }
+  local loot = nil
   local quantity = 0.0
 
   -- Calculate loot based on entity type
@@ -231,20 +231,20 @@ function EntityDied(event)
     if blueAverage >= 1 then
       -- Random drop with average based on settings
       quantity = 2 * math.random() * blueAverage
-      loot = { name = "blue-xenomass", count = math.floor(quantity + 0.5) }
+      loot = { type = "item", name = "blue-xenomass", count = math.floor(quantity + 0.5) }
     elseif blueAverage > math.random() then
       -- Fractional chance for single item
-      loot = { name = "blue-xenomass", count = 1 }
+      loot = { type = "item", name = "blue-xenomass", count = 1 }
     end
   elseif alien.type == "turret" then
     -- Worm turrets always drop blue xenomass
     quantity = 2 * math.random() * 20
-    loot = { name = "blue-xenomass", count = math.floor(quantity + 0.5) }
+    loot = { type = "item", name = "blue-xenomass", count = math.floor(quantity + 0.5) }
   elseif alien.type == "unit-spawner" then
     -- Spawners drop red xenomass, amount decreases with each nest killed
     storage.nestsKilled = storage.nestsKilled + 1
     quantity = settings.global["zpollution-red-per-alien"].value / storage.nestsKilled
-    loot = { name = "red-xenomass", count = math.ceil(quantity) }
+    loot = { type = "item", name = "red-xenomass", count = math.ceil(quantity) }
   end
 
   --log(create " .. quantity .. " xenomass")
@@ -258,7 +258,7 @@ function EntityDied(event)
     )
 
   -- Spawn loot if any was calculated
-  if loot.count >= 1 then
+  if loot and loot.count >= 1 then
     if isArtillery then
       -- Artillery kills assign loot to the force
       if isArtillery then
@@ -266,7 +266,7 @@ function EntityDied(event)
           event.cause.type .. " from force " .. event.force.name .. " killed " .. alien.name .. "."
         )
       end
-      -- Factorio 2.0+ API: For single stack, use 'stack' parameter instead of 'items' array
+      -- Factorio 2.0+ API: ItemStack with type field required
       alien.surface.spill_item_stack({
         position = alien.position,
         stack = loot,
@@ -275,7 +275,7 @@ function EntityDied(event)
       return
     else
       -- Normal kills spawn neutral loot
-      -- Factorio 2.0+ API: For single stack, use 'stack' parameter instead of 'items' array
+      -- Factorio 2.0+ API: ItemStack with type field required
       alien.surface.spill_item_stack({
         position = alien.position,
         stack = loot,
