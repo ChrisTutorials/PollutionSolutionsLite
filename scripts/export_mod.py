@@ -256,14 +256,34 @@ class ModExporter:
             print(f"Warning: Failed to update info.json: {e}")
             return False
     
+    def update_exported_info_version(self, mod_dest: Path, version: str) -> bool:
+        """Update version in the exported mod's info.json"""
+        info_path = mod_dest / 'info.json'
+        try:
+            with open(info_path, 'r') as f:
+                info = json.load(f)
+            
+            info['version'] = version
+            
+            with open(info_path, 'w') as f:
+                json.dump(info, f, indent='\t')
+            
+            return True
+        except Exception as e:
+            print(f"Warning: Failed to update exported info.json: {e}")
+            return False
+    
     def create_archive(self, mod_dest: Path) -> bool:
         """Create zip archive of the exported mod with incremental versioning"""
         base_version = self.get_mod_version()
         dest_parent = mod_dest.parent
         version = self.get_next_version(base_version, dest_parent)
         
-        # Update info.json with new version
+        # Update info.json in source directory
         self.update_info_version(version)
+        
+        # Update info.json in exported directory
+        self.update_exported_info_version(mod_dest, version)
         
         archive_name = f"{self.mod_name}_{version}.zip"
         archive_path = dest_parent / archive_name
