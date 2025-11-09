@@ -259,6 +259,12 @@ function EntityDied(event)
 
   -- Spawn loot if any was calculated
   if loot.count >= 1 then
+    -- Verify item exists before trying to spill it
+    assert(
+      loot.name and data.raw["item"][loot.name],
+      "Item not found: " .. (loot.name or "nil") .. " - cannot spill loot from " .. alien.name
+    )
+    
     if isArtillery then
       -- Artillery kills assign loot to the force
       if isArtillery then
@@ -267,7 +273,11 @@ function EntityDied(event)
         )
       end
       -- Factorio 2.0+ API: spill_item_stack requires stack parameter with count
-      alien.surface.spill_item_stack({ position = alien.position, stack = loot, force = alien.force })
+      alien.surface.spill_item_stack({
+        position = alien.position,
+        stack = loot,
+        force = alien.force,
+      })
       return
     else
       -- Normal kills spawn neutral loot
