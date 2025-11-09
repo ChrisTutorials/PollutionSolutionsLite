@@ -379,7 +379,7 @@ local sludgePerFire = firetoxic.add_fuel_cooldown * (turretSludgePerSecond / TIC
 firetoxic.initial_lifetime = 0
 -- Factorio 2.0: emissions_per_second must be a dictionary with pollution types
 firetoxic.emissions_per_second = {
-	pollution = emissionsPerSludge * sludgePerFire * (TICKS_PER_SECOND / firetoxic.initial_lifetime),
+  pollution = emissionsPerSludge * sludgePerFire * (TICKS_PER_SECOND / firetoxic.initial_lifetime),
 }
 firetoxic.maximum_spread_count = 0
 firetoxic.damage_per_tick.amount = 24 / TICKS_PER_SECOND
@@ -443,8 +443,8 @@ toxiccloud_small.animation = {
       draw_as_shadow = false,
     },--]]
     {
-      filename = GRAPHICS.."entity/cloud/toxicwaste.png",
-      flags = {  }, -- "compressed" flag removed in Factorio 2.0
+      filename = GRAPHICS .. "entity/cloud/toxicwaste.png",
+      flags = {}, -- "compressed" flag removed in Factorio 2.0
       priority = "low",
       width = 256,
       height = 256,

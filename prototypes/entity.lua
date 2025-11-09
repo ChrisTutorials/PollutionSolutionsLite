@@ -10,7 +10,7 @@ incinerator.order = "z"
 incinerator.minable.result = "toxic-incinerator"
 incinerator.consumption = INCINERATOR_OUTPUT .. "MW" -- the game divides this by efficiency to get true consumption
 -- Factorio 2.0: fuel_category changed to fuel_categories (array)
-incinerator.energy_source.fuel_categories = {"waste"}
+incinerator.energy_source.fuel_categories = { "waste" }
 incinerator.energy_source.effectivity = INCINERATOR_EFFICIENCY
 incinerator.meltdown_action = nil
 
@@ -19,7 +19,7 @@ local sludgePerMinute = 60 * (INCINERATOR_OUTPUT / INCINERATOR_EFFICIENCY) / MJ_
 
 -- Factorio 2.0: emissions_per_minute must be a dictionary with pollution types
 incinerator.energy_source.emissions_per_minute = {
-  pollution = emissionsPerSludge * sludgePerMinute
+  pollution = emissionsPerSludge * sludgePerMinute,
 }
 
 assert(incinerator.picture and incinerator.picture.layers, "Incinerator picture.layers not found")

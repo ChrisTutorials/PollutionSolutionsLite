@@ -58,7 +58,10 @@ function tests.test_setLayerGraphics_nil_layer_fails()
     setLayerGraphics(nil, "test.png", "hr-test.png")
   end)
   TestUtils.assert(not success, "Should fail when layer is nil")
-  TestUtils.assert(string.find(err, "Layer cannot be nil") ~= nil, "Should have meaningful error message")
+  TestUtils.assert(
+    string.find(err, "Layer cannot be nil") ~= nil,
+    "Should have meaningful error message"
+  )
 end
 
 function tests.test_setDirectionalGraphics_north()

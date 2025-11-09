@@ -67,7 +67,10 @@ function tests.test_helper_functions_fail_fast()
     setLayerGraphics(nil, "test.png", nil)
   end)
   TestUtils.assert(not success, "Should fail with nil layer")
-  TestUtils.assert(string.find(tostring(err), "Layer cannot be nil") ~= nil, "Should have meaningful error")
+  TestUtils.assert(
+    string.find(tostring(err), "Layer cannot be nil") ~= nil,
+    "Should have meaningful error"
+  )
 
   -- setAllDirectionalGraphics should fail on nil structure
   local success2, err2 = pcall(function()
@@ -75,7 +78,10 @@ function tests.test_helper_functions_fail_fast()
     setAllDirectionalGraphics(nil, "test/")
   end)
   TestUtils.assert(not success2, "Should fail with nil structure")
-  TestUtils.assert(string.find(tostring(err2), "Structure cannot be nil") ~= nil, "Should have meaningful error")
+  TestUtils.assert(
+    string.find(tostring(err2), "Structure cannot be nil") ~= nil,
+    "Should have meaningful error"
+  )
 end
 
 function tests.test_missing_function_detection()

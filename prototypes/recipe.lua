@@ -57,8 +57,11 @@ data:extend({
     energy_required = 0.5,
     enabled = false,
     ingredients = {
-      { type = "item", name = "blue-xenomass", amount = BLUE_TO_RED_COST
-        * BLUE_XENOMASS_PER_RED_XENOMASS },
+      {
+        type = "item",
+        name = "blue-xenomass",
+        amount = BLUE_TO_RED_COST * BLUE_XENOMASS_PER_RED_XENOMASS,
+      },
     },
     results = {
       { type = "item", name = "red-xenomass", amount = 1 },
