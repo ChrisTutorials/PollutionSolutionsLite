@@ -234,11 +234,34 @@ class ModExporter:
         
         return f"{base_version}.{max_increment + 1}"
     
+    def update_info_version(self, version: str) -> bool:
+        """Update version in info.json"""
+        info_path = self.mod_source_dir / 'info.json'
+        try:
+            with open(info_path, 'r') as f:
+                info = json.load(f)
+            
+            old_version = info.get('version', '0.0.0')
+            info['version'] = version
+            
+            with open(info_path, 'w') as f:
+                json.dump(info, f, indent='\t')
+            
+            print(f"Updated info.json: {old_version} → {version}")
+            return True
+        except Exception as e:
+            print(f"Warning: Failed to update info.json: {e}")
+            return False
+    
     def create_archive(self, mod_dest: Path) -> bool:
         """Create zip archive of the exported mod with incremental versioning"""
         base_version = self.get_mod_version()
         dest_parent = mod_dest.parent
         version = self.get_next_version(base_version, dest_parent)
+        
+        # Update info.json with new version
+        self.update_info_version(version)
+        
         archive_name = f"{self.mod_name}_{version}.zip"
         archive_path = dest_parent / archive_name
         
