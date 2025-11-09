@@ -8,6 +8,13 @@ development files (.git, tests, docs, etc.)
 ATTRIBUTION: This mod is based on Pollution Solutions by daniels1989.
 The version is a Factorio 2.0 port by ChrisTutorials.
 
+VERSIONING NOTE:
+  This script automatically increments the mod version (1.1.1 → 1.1.2 → 1.1.3, etc.)
+  for internal development/testing builds.
+  
+  IMPORTANT: Before releasing publicly, reset version to 1.1.0 in info.json
+  See DEV_VERSION_NOTICE.md for details
+
 Usage:
     python export_mod.py [destination_path]
 
