@@ -344,6 +344,7 @@ toxicflame.particle.width = 512
 toxicflame.particle.height = 512
 toxicflame.particle.frame_count = 1
 toxicflame.particle.line_length = 1
+toxicflame.particle.variation_count = 1  -- CRITICAL: Reset from base game's multi-variation count
 toxicflame.particle_horizontal_speed = data.raw["stream"]["flamethrower-fire-stream"].particle_horizontal_speed
   * 1.75
 

@@ -19,6 +19,8 @@ assert(
 
 -- COMPLETE REPLACEMENT of picture structure with single clean sprite
 -- Don't try to patch base game structure - replace it entirely
+-- CRITICAL: Do NOT include variation_count at all (not even =1)
+-- variation_count causes Factorio to read multiple sprites horizontally
 pollutioncollector.pictures = {
   picture = {
     sheets = {
@@ -28,9 +30,16 @@ pollutioncollector.pictures = {
         height = 108,
         frame_count = 1,
         line_length = 1
+        -- NO variation_count - omit it entirely!
       }
-    }
-  }
+    },
+    -- CRITICAL: Remove variation_count from picture level too
+    variation_count = nil,
+    repeat_count = nil
+  },
+  -- Also remove from pictures level if it exists
+  variation_count = nil,
+  repeat_count = nil
 }
 
 pollutioncollector.fluid_box.filter = "polluted-air"

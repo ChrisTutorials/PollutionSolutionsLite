@@ -64,7 +64,8 @@ class SpriteRectangleValidator:
         """
         Test Case 2: Variation count is properly removed
         
-        Verify that variation_count is set to nil (not 1, not omitted)
+        Verify that variation_count is NOT set (completely omitted from sheet definition)
+        Setting it to ANY value (including 1) activates the variation system.
         """
         print("\n" + "="*70)
         print("Test 2: Variation Count Removal")
@@ -73,22 +74,18 @@ class SpriteRectangleValidator:
         pollutioncollector_lua = self.mod_dir / "prototypes" / "pollutioncollector.lua"
         content = pollutioncollector_lua.read_text()
         
-        # Anti-pattern: variation_count = 1
-        if "variation_count = 1" in content:
+        # Anti-pattern: variation_count with ANY value
+        if "variation_count = " in content or "variation_count=" in content:
             self.errors.append(
-                "pollutioncollector.lua: Found 'variation_count = 1'\n"
-                "  This tells Factorio there's 1 variation, but sprite layout still applies!\n"
-                "  Solution: Use 'variation_count = nil' or omit it entirely"
+                "pollutioncollector.lua: Found 'variation_count' property\n"
+                "  Setting variation_count to ANY value (even 1) activates variation system!\n"
+                "  Solution: Omit variation_count entirely from sheet definition"
             )
             return False
         
-        # Good pattern: variation_count = nil OR no variation_count in sheet definition
-        if "variation_count = nil" in content or "variation_count" not in content:
-            print("✓ PASS: variation_count properly handled")
-            return True
-        
-        self.errors.append("pollutioncollector.lua: variation_count handling unclear")
-        return False
+        # Good pattern: no variation_count in pictures definition
+        print("✓ PASS: variation_count not present (completely omitted)")
+        return True
     
     def test_all_sheets_reset(self) -> bool:
         """
