@@ -16,7 +16,7 @@
 ---Deep copy prototype data from data.raw with optional nested field access
 ---@param _Type string The prototype type (e.g., "item", "entity", "recipe")
 ---@param _Name string The name of the prototype to copy
----@param _args string|table Optional nested field path (string for single field, table for nested path)
+---@param _args? string|table Optional nested field path (string for single field, table for nested path)
 ---@return table A deep copy of the requested prototype data
 function copyData(_Type, _Name, _args)
   if _args then

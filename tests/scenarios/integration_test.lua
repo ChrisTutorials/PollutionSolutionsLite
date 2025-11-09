@@ -12,6 +12,12 @@
   - Entity lifecycle (build, destroy)
 ]]
 
+--[[
+  Integration Tests for Pollution Solutions Lite
+  
+  These tests verify core functionality in a game context
+]]
+
 -- Test configuration
 local TEST_POSITION = { x = 0, y = 0 }
 local TEST_FORCE = "player"

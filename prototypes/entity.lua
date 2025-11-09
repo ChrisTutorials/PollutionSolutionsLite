@@ -9,7 +9,8 @@ incinerator.name = "toxic-incinerator"
 incinerator.order = "z"
 incinerator.minable.result = "toxic-incinerator"
 incinerator.consumption = INCINERATOR_OUTPUT .. "MW" -- the game divides this by efficiency to get true consumption
-incinerator.energy_source.fuel_category = "waste"
+-- Factorio 2.0: fuel_category changed to fuel_categories (array)
+incinerator.energy_source.fuel_categories = {"waste"}
 incinerator.energy_source.effectivity = INCINERATOR_EFFICIENCY
 incinerator.meltdown_action = nil
 

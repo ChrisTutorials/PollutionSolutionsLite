@@ -58,7 +58,7 @@ function tests.test_setLayerGraphics_nil_layer_fails()
     setLayerGraphics(nil, "test.png", "hr-test.png")
   end)
   TestUtils.assert(not success, "Should fail when layer is nil")
-  TestUtils.assert(string.find(err, "Layer cannot be nil"), "Should have meaningful error message")
+  TestUtils.assert(string.find(err, "Layer cannot be nil") ~= nil, "Should have meaningful error message")
 end
 
 function tests.test_setDirectionalGraphics_north()
@@ -84,7 +84,7 @@ function tests.test_setDirectionalGraphics_missing_direction_fails()
   end)
   TestUtils.assert(not success, "Should fail when direction doesn't exist")
   TestUtils.assert(
-    string.find(err, "Structure.north.layers not found"),
+    string.find(err, "Structure.north.layers not found") ~= nil,
     "Should have meaningful error message"
   )
 end
@@ -162,7 +162,7 @@ function tests.test_setAllDirectionalGraphics_missing_direction_fails()
   end)
   TestUtils.assert(not success, "Should fail when a direction is missing")
   TestUtils.assert(
-    string.find(err, "Structure.west.layers not found"),
+    string.find(err, "Structure.west.layers not found") ~= nil,
     "Should indicate which direction is missing"
   )
 end
@@ -173,7 +173,7 @@ function tests.test_setAllDirectionalGraphics_nil_structure_fails()
   end)
   TestUtils.assert(not success, "Should fail when structure is nil")
   TestUtils.assert(
-    string.find(err, "Structure cannot be nil"),
+    string.find(err, "Structure cannot be nil") ~= nil,
     "Should have meaningful error message"
   )
 end

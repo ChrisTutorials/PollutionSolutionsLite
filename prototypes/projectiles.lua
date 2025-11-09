@@ -371,9 +371,10 @@ local emissionsPerSludge = EMISSIONS_PER_AIR * AIR_PER_SLUDGE
 local turretSludgePerSecond = 3 --data.raw['fluid-turret']['toxic-turret'].attack_parameters.fluid_consumption
 local sludgePerFire = firetoxic.add_fuel_cooldown * (turretSludgePerSecond / TICKS_PER_SECOND)
 firetoxic.initial_lifetime = 0
-firetoxic.emissions_per_second = emissionsPerSludge
-  * sludgePerFire
-  * (TICKS_PER_SECOND / firetoxic.initial_lifetime)
+-- Factorio 2.0: emissions_per_second must be a dictionary with pollution types
+firetoxic.emissions_per_second = {
+	pollution = emissionsPerSludge * sludgePerFire * (TICKS_PER_SECOND / firetoxic.initial_lifetime),
+}
 firetoxic.maximum_spread_count = 0
 firetoxic.damage_per_tick.amount = 24 / TICKS_PER_SECOND
 firetoxic.maximum_damage_multiplier = 12

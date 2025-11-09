@@ -16,6 +16,8 @@ require("constants")
 
 -- Configure toxic sludge barrel as burnable fuel
 -- Each barrel holds 50 units of toxic sludge
-data.raw["item"][TOXIC_SLUDGE_NAME .. "-barrel"].fuel_category = "waste"
+-- Factorio 2.0: fuel_category changed to fuel_categories (array)
+data.raw["item"][TOXIC_SLUDGE_NAME .. "-barrel"].fuel_categories = { "waste" }
 data.raw["item"][TOXIC_SLUDGE_NAME .. "-barrel"].fuel_value = (50 * MJ_PER_TOXIC_SLUDGE) .. "MJ"
-data.raw["item"][TOXIC_SLUDGE_NAME .. "-barrel"].burnt_result = "empty-barrel"
+-- Factorio 2.0: barrel system changed, burnt_result returns to "barrel" not "empty-barrel"
+data.raw["item"][TOXIC_SLUDGE_NAME .. "-barrel"].burnt_result = "barrel"

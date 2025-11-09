@@ -9,5 +9,7 @@
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true
     },
-    "stylua.search_parent_directories": true
+    "stylua.search_parent_directories": true,
+    "Lua.diagnostics.globals": ["game", "script", "mods", "commands", "data", "util", "global"],
+    "Lua.workspace.library": ["${workspaceFolder}/factorio_annotations.lua"]
 }
