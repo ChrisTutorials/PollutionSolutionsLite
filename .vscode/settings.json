@@ -1,0 +1,13 @@
+{
+    "cSpell.words": [
+        "factorio",
+        "steamapps",
+        "valvesoftware"
+    ],
+    "[lua]": {
+        "editor.defaultFormatter": "JohnnyMorganz.stylua",
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true
+    },
+    "stylua.search_parent_directories": true
+}

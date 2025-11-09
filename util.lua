@@ -18,12 +18,12 @@
 ---@param _Name string The name of the prototype to copy
 ---@param _args string|table Optional nested field path (string for single field, table for nested path)
 ---@return table A deep copy of the requested prototype data
-function copyData( _Type, _Name, _args )
+function copyData(_Type, _Name, _args)
   if _args then
-    if( type(_args) == 'table' ) then
+    if type(_args) == "table" then
       -- Navigate through nested fields using array of keys
       local result = data.raw[_Type][_Name]
-      for i=1, #_args, 1 do
+      for i = 1, #_args, 1 do
         result = result[_args[i]]
       end
       return util.table.deepcopy(result)
@@ -77,9 +77,11 @@ end
 ---Useful for fast membership testing: if set[item] then ... end
 ---@param list table Array-like table to convert
 ---@return table Hash table where keys are list elements and values are true
-function Set (list)
+function Set(list)
   local set = {}
-  for _, l in ipairs(list) do set[l] = true end
+  for _, l in ipairs(list) do
+    set[l] = true
+  end
   return set
 end
 
@@ -101,8 +103,10 @@ end
 ---@param filename string The base graphics filename
 ---@param hr_filename string|nil Optional high-resolution filename
 function setDirectionalGraphics(structure, direction, filename, hr_filename)
-  assert(structure and structure[direction] and structure[direction].layers, 
-    "Structure." .. direction .. ".layers not found")
+  assert(
+    structure and structure[direction] and structure[direction].layers,
+    "Structure." .. direction .. ".layers not found"
+  )
   setLayerGraphics(structure[direction].layers[1], filename, hr_filename)
 end
 
@@ -111,20 +115,32 @@ end
 ---@param base_path string Base path for graphics (e.g., "entity/low-heat-exchanger/")
 function setAllDirectionalGraphics(structure, base_path)
   assert(structure, "Structure cannot be nil")
-  
+
   -- Verify all directions exist
   assert(structure.north and structure.north.layers, "Structure.north.layers not found")
   assert(structure.east and structure.east.layers, "Structure.east.layers not found")
   assert(structure.south and structure.south.layers, "Structure.south.layers not found")
   assert(structure.west and structure.west.layers, "Structure.west.layers not found")
-  
+
   -- Set filenames for each direction
-  setLayerGraphics(structure.north.layers[1], GRAPHICS .. base_path .. "lowheatex-N-idle.png", 
-    GRAPHICS .. base_path .. "hr-lowheatex-N-idle.png")
-  setLayerGraphics(structure.east.layers[1], GRAPHICS .. base_path .. "lowheatex-E-idle.png",
-    GRAPHICS .. base_path .. "hr-lowheatex-E-idle.png")
-  setLayerGraphics(structure.south.layers[1], GRAPHICS .. base_path .. "lowheatex-S-idle.png",
-    GRAPHICS .. base_path .. "hr-lowheatex-S-idle.png")
-  setLayerGraphics(structure.west.layers[1], GRAPHICS .. base_path .. "lowheatex-W-idle.png",
-    GRAPHICS .. base_path .. "hr-lowheatex-W-idle.png")
+  setLayerGraphics(
+    structure.north.layers[1],
+    GRAPHICS .. base_path .. "lowheatex-N-idle.png",
+    GRAPHICS .. base_path .. "hr-lowheatex-N-idle.png"
+  )
+  setLayerGraphics(
+    structure.east.layers[1],
+    GRAPHICS .. base_path .. "lowheatex-E-idle.png",
+    GRAPHICS .. base_path .. "hr-lowheatex-E-idle.png"
+  )
+  setLayerGraphics(
+    structure.south.layers[1],
+    GRAPHICS .. base_path .. "lowheatex-S-idle.png",
+    GRAPHICS .. base_path .. "hr-lowheatex-S-idle.png"
+  )
+  setLayerGraphics(
+    structure.west.layers[1],
+    GRAPHICS .. base_path .. "lowheatex-W-idle.png",
+    GRAPHICS .. base_path .. "hr-lowheatex-W-idle.png"
+  )
 end

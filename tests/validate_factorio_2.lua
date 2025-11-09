@@ -44,7 +44,9 @@ end
 ---Read entire file contents
 local function read_file(path)
   local f = io.open(path, "r")
-  if not f then return nil end
+  if not f then
+    return nil
+  end
   local content = f:read("*all")
   f:close()
   return content
@@ -54,19 +56,19 @@ end
 local function parse_json(content)
   -- Very basic JSON parsing - just for info.json
   local result = {}
-  
+
   -- Extract factorio_version
   local factorio_version = content:match('"factorio_version"%s*:%s*"([^"]+)"')
   result.factorio_version = factorio_version
-  
+
   -- Extract version
   local version = content:match('"version"%s*:%s*"([^"]+)"')
   result.version = version
-  
+
   -- Extract name
   local name = content:match('"name"%s*:%s*"([^"]+)"')
   result.name = name
-  
+
   return result
 end
 
@@ -81,19 +83,19 @@ if not file_exists("info.json") then
 else
   local content = read_file("info.json")
   local info = parse_json(content)
-  
+
   if info.factorio_version == "2.0" then
     pass("factorio_version is set to '2.0'")
   else
     error("factorio_version is '" .. tostring(info.factorio_version) .. "' but should be '2.0'")
   end
-  
+
   if info.version then
     pass("Mod version is " .. info.version)
   else
     error("Mod version not found in info.json")
   end
-  
+
   if content:match('"base%s*>=%s*2%.0"') then
     pass("Base dependency updated to >= 2.0")
   else
@@ -108,7 +110,7 @@ local required_files = {
   "data.lua",
   "constants.lua",
   "util.lua",
-  "settings.lua"
+  "settings.lua",
 }
 
 for _, file in ipairs(required_files) do
@@ -123,16 +125,17 @@ end
 print("\nChecking for deprecated API patterns...")
 
 local files_to_check = {
-  {path = "control.lua", name = "control.lua"},
-  {path = "data.lua", name = "data.lua"},
+  { path = "control.lua", name = "control.lua" },
+  { path = "data.lua", name = "data.lua" },
 }
 
 -- Common deprecated patterns in Factorio 2.0
 local deprecated_patterns = {
-  {pattern = "result%s*=%s*\"[^\"]+\"%s*,%s*result_count", 
-   msg = "Old recipe format detected (result/result_count). Should use results array."},
-  {pattern = "%.set_controller%s*%(", 
-   msg = "set_controller API may have changed in 2.0"},
+  {
+    pattern = 'result%s*=%s*"[^"]+"%s*,%s*result_count',
+    msg = "Old recipe format detected (result/result_count). Should use results array.",
+  },
+  { pattern = "%.set_controller%s*%(", msg = "set_controller API may have changed in 2.0" },
 }
 
 for _, file_info in ipairs(files_to_check) do
@@ -174,7 +177,7 @@ print("\nChecking for Factorio 2.0 specific updates...")
 local data_lua = read_file("data.lua")
 if data_lua then
   -- Check if prototypes are loaded
-  if data_lua:match('require%s*%(%s*["\']prototypes') then
+  if data_lua:match("require%s*%(%s*[\"']prototypes") then
     pass("Prototypes are properly loaded")
   else
     warning("Prototype loading may not be standard")

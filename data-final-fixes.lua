@@ -12,7 +12,7 @@
     - Returns empty barrel after burning
 ]]
 
-require "constants"
+require("constants")
 
 -- Configure toxic sludge barrel as burnable fuel
 -- Each barrel holds 50 units of toxic sludge

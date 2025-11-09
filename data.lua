@@ -19,7 +19,7 @@
   - K2 Flare Stack: Increases pollution output when flaring pollution fluids
 ]]
 
-require("util")  -- Load utility functions before prototypes
+require("util") -- Load utility functions before prototypes
 require("prototypes.category")
 require("prototypes.projectiles")
 require("prototypes.entity")
@@ -33,6 +33,6 @@ require("prototypes.hevsuit")
 
 -- K2 Flare Stack compatibility: Make pollution fluids more polluting when flared
 if mods["k2-flare-stack"] then
-	flare_stack.flare_stack_util.addBurnFluidEmissionsMultiplier("polluted-air", 600)
-	flare_stack.flare_stack_util.addBurnFluidEmissionsMultiplier("toxic-sludge", 600 * AIR_PER_SLUDGE)
+  flare_stack.flare_stack_util.addBurnFluidEmissionsMultiplier("polluted-air", 600)
+  flare_stack.flare_stack_util.addBurnFluidEmissionsMultiplier("toxic-sludge", 600 * AIR_PER_SLUDGE)
 end

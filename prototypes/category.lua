@@ -14,13 +14,13 @@ data:extend({
   -- Used by incinerators to burn toxic sludge for power
   {
     type = "fuel-category",
-    name = "waste"
+    name = "waste",
   },
-  
+
   -- Recipe category for pollution processing
   -- Used by specialized pollution processing buildings
   {
     type = "recipe-category",
-    name = "pollution"
-  }
+    name = "pollution",
+  },
 })

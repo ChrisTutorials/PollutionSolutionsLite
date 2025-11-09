@@ -100,10 +100,10 @@ function TestUtils.runTestSuite(suiteName, tests)
   TestUtils.log("========================================")
   TestUtils.log("Test Suite: " .. suiteName)
   TestUtils.log("========================================")
-  
+
   local passed = 0
   local failed = 0
-  
+
   for testName, testFn in pairs(tests) do
     if TestUtils.runTest(testName, testFn) then
       passed = passed + 1
@@ -111,11 +111,11 @@ function TestUtils.runTestSuite(suiteName, tests)
       failed = failed + 1
     end
   end
-  
+
   TestUtils.log("========================================")
   TestUtils.log(string.format("Results: %d passed, %d failed", passed, failed))
   TestUtils.log("========================================")
-  
+
   return passed, failed
 end
 

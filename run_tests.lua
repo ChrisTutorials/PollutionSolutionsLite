@@ -12,7 +12,7 @@
 local testResults = {
   suites = {},
   totalPassed = 0,
-  totalFailed = 0
+  totalFailed = 0,
 }
 
 -- Mock Factorio environment

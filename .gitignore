@@ -1,2 +1,4 @@
 .idea
 factorio/
+scripts/validate_config.yaml
+scripts/validate_config.sh

@@ -1,0 +1,51 @@
+# Factorio Validation Configuration
+# Copy this file to validate_config.yaml and customize for your system
+
+# Factorio binary location
+# If empty or null, will auto-detect from common_paths
+factorio_bin: null
+
+# Common paths to try (in order) if factorio_bin is not set
+common_paths:
+  # Linux
+  - /opt/factorio/bin/x64/factorio
+  - /usr/local/bin/factorio
+  - ~/factorio/bin/x64/factorio
+  
+  # macOS
+  - /Applications/factorio.app/Contents/MacOS/factorio
+  
+  # Windows (WSL or native Python)
+  - C:\Program Files\Factorio\bin\x64\factorio.exe
+  - C:\Program Files (x86)\Factorio\bin\x64\factorio.exe
+  - /mnt/c/Program Files/Factorio/bin/x64/factorio.exe
+  - /mnt/c/Program Files (x86)/Factorio/bin/x64/factorio.exe
+  
+  # Steam (Linux)
+  - ~/.steam/steam/steamapps/common/Factorio/bin/x64/factorio
+  - ~/.local/share/Steam/steamapps/common/Factorio/bin/x64/factorio
+  - ~/Steam/steamapps/common/Factorio/bin/x64/factorio
+  - ~/.var/app/com.valvesoftware.Steam/data/Steam/steamapps/common/Factorio/bin/x64/factorio  # Flatpak Steam
+  
+  # Steam (macOS)
+  - ~/Library/Application Support/Steam/steamapps/common/Factorio/factorio.app/Contents/MacOS/factorio
+  
+  # Steam (Windows via WSL)
+  - /mnt/c/Program Files (x86)/Steam/steamapps/common/Factorio/bin/x64/factorio.exe
+  
+  # Add your system-specific path here
+  # - /run/media/USERNAME/DISK_ID/factorio/bin/x64/factorio
+
+# Validation options
+validation:
+  # Create test save file to validate runtime
+  create_test_save: true
+  
+  # Run instrument-mod checks
+  instrument_mod: true
+  
+  # Disable audio during validation (headless mode)
+  disable_audio: true
+  
+  # Verbose output
+  verbose: false

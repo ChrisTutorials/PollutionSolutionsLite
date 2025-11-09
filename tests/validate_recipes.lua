@@ -15,29 +15,34 @@ local function check_file(filename)
     print("  ✗ Could not open file")
     return false
   end
-  
+
   local content = file:read("*all")
   file:close()
-  
+
   local issues = {}
   local line_num = 0
-  
+
   for line in content:gmatch("[^\r\n]+") do
     line_num = line_num + 1
-    
+
     -- Check for old result format (but allow place_result and minable.result)
-    if line:match("%s+result%s*=%s*[\"']") and 
-       not line:match("place_result") and 
-       not line:match("minable%.result") then
+    if
+      line:match("%s+result%s*=%s*[\"']")
+      and not line:match("place_result")
+      and not line:match("minable%.result")
+    then
       table.insert(issues, string.format("  Line %d: Found old 'result' format", line_num))
     end
-    
+
     -- Check for normal/expensive difficulty modes
     if line:match("%.normal%s*=%s*{") or line:match("%.expensive%s*=%s*{") then
-      table.insert(issues, string.format("  Line %d: Found deprecated difficulty mode (normal/expensive)", line_num))
+      table.insert(
+        issues,
+        string.format("  Line %d: Found deprecated difficulty mode (normal/expensive)", line_num)
+      )
     end
   end
-  
+
   if #issues > 0 then
     print("  ✗ Found " .. #issues .. " issue(s):")
     for _, issue in ipairs(issues) do

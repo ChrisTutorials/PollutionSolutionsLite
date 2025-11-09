@@ -10,14 +10,14 @@ require("tests.test_bootstrap")
 if not settings then
   settings = {
     startup = {
-      ["zpollution-mj-per-sludge"] = {value = 10},
-      ["zpollution-incinerator-efficiency"] = {value = 0.1},
-      ["zpollution-incinerator-output"] = {value = 2.0},
-      ["zpollution-air-per-sludge"] = {value = 10},
-      ["zpollution-sludge-per-filter"] = {value = 100},
-      ["zpollution-blue-per-red"] = {value = 10},
-      ["zpollution-blue-to-red-cost"] = {value = 10.0},
-    }
+      ["zpollution-mj-per-sludge"] = { value = 10 },
+      ["zpollution-incinerator-efficiency"] = { value = 0.1 },
+      ["zpollution-incinerator-output"] = { value = 2.0 },
+      ["zpollution-air-per-sludge"] = { value = 10 },
+      ["zpollution-sludge-per-filter"] = { value = 100 },
+      ["zpollution-blue-per-red"] = { value = 10 },
+      ["zpollution-blue-to-red-cost"] = { value = 10.0 },
+    },
   }
 end
 
@@ -37,14 +37,28 @@ end
 function tests.test_toxic_dump_constants()
   TestUtils.assertNotNil(TOXIC_DUMP_NAME, "Toxic dump name should be defined")
   TestUtils.assertEqual(TOXIC_DUMP_NAME, "dump-site", "Toxic dump name should match")
-  TestUtils.assertEqual(TOXIC_DUMP_INTERVAL, 1800, "Toxic dump interval should be 30 seconds (1800 ticks)")
-  TestUtils.assert(TOXIC_DUMP_FILLPERCENT >= 0 and TOXIC_DUMP_FILLPERCENT <= 1, "Fill percent should be 0-1")
-  TestUtils.assert(TOXIC_DUMP_CONSUME_PERCENT >= 0 and TOXIC_DUMP_CONSUME_PERCENT <= 1, "Consume percent should be 0-1")
+  TestUtils.assertEqual(
+    TOXIC_DUMP_INTERVAL,
+    1800,
+    "Toxic dump interval should be 30 seconds (1800 ticks)"
+  )
+  TestUtils.assert(
+    TOXIC_DUMP_FILLPERCENT >= 0 and TOXIC_DUMP_FILLPERCENT <= 1,
+    "Fill percent should be 0-1"
+  )
+  TestUtils.assert(
+    TOXIC_DUMP_CONSUME_PERCENT >= 0 and TOXIC_DUMP_CONSUME_PERCENT <= 1,
+    "Consume percent should be 0-1"
+  )
 end
 
 function tests.test_pollution_collector_constants()
   TestUtils.assertNotNil(POLLUTION_COLLECTOR_NAME, "Pollution collector name should be defined")
-  TestUtils.assertEqual(POLLUTION_COLLECTOR_NAME, "pollutioncollector", "Pollution collector name should match")
+  TestUtils.assertEqual(
+    POLLUTION_COLLECTOR_NAME,
+    "pollutioncollector",
+    "Pollution collector name should match"
+  )
 end
 
 function tests.test_fluid_constants()
@@ -63,7 +77,10 @@ end
 function tests.test_incinerator_settings()
   TestUtils.assertEqual(INCINERATOR_EFFICIENCY, 0.1, "Incinerator efficiency should match settings")
   TestUtils.assertEqual(INCINERATOR_OUTPUT, 2.0, "Incinerator output should match settings")
-  TestUtils.assert(INCINERATOR_EFFICIENCY > 0 and INCINERATOR_EFFICIENCY <= 1, "Efficiency should be 0-1")
+  TestUtils.assert(
+    INCINERATOR_EFFICIENCY > 0 and INCINERATOR_EFFICIENCY <= 1,
+    "Efficiency should be 0-1"
+  )
 end
 
 function tests.test_xenomass_constants()
@@ -80,8 +97,10 @@ function tests.test_cloud_size_constants()
   TestUtils.assertNotNil(TOXIC_DUMP_CLOUD_SMALL, "Small cloud name should be defined")
   TestUtils.assertNotNil(TOXIC_DUMP_CLOUD_MEDIUM, "Medium cloud name should be defined")
   TestUtils.assertNotNil(TOXIC_DUMP_CLOUD_LARGE, "Large cloud name should be defined")
-  TestUtils.assert(TOXIC_DUMP_CLOUD_MEDIUM_PERCENT < TOXIC_DUMP_CLOUD_LARGE_PERCENT, 
-    "Medium threshold should be less than large threshold")
+  TestUtils.assert(
+    TOXIC_DUMP_CLOUD_MEDIUM_PERCENT < TOXIC_DUMP_CLOUD_LARGE_PERCENT,
+    "Medium threshold should be less than large threshold"
+  )
 end
 
 -- Run the test suite

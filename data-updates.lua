@@ -12,8 +12,8 @@
   somewhat resistant to toxic damage, maintaining balance across damage types.
 ]]
 
-require "constants"
-require "util"
+require("constants")
+require("util")
 
 -------------------
 -- Compatibility --
@@ -23,7 +23,10 @@ require "util"
 
 if mods["RampantIndustry"] then
   -- Link Rampant Industry's air filtering to our pollution controls
-  table.insert(data.raw["technology"]["rampant-industry-technology-air-filtering"].prerequisites, "pollution-controls")
+  table.insert(
+    data.raw["technology"]["rampant-industry-technology-air-filtering"].prerequisites,
+    "pollution-controls"
+  )
 end
 
 if mods["NauvisDay"] then
@@ -42,24 +45,23 @@ if mods["modmashsplinterresources"] then
   table.insert(data.raw["technology"]["alien-conversion1"].prerequisites, "incineration")
 end
 
-
 ---Add resistance to entities for a specific damage type
 ---@param entityList table Array of entity prototypes
 ---@param _DamageType string The damage type to add resistance for
 ---@param _Percent number Percentage damage reduction (0-100)
 ---@param _Decrease number Flat damage reduction amount
 local function addResistance(entityList, _DamageType, _Percent, _Decrease)
-  if not entityList or (not _Percent and not _Decrease) or (_Percent == 0 and _Decrease == 0)  then
+  if not entityList or (not _Percent and not _Decrease) or (_Percent == 0 and _Decrease == 0) then
     --log("Failed to make entity list immune.")
     return
   end
-  
+
   for _, entity in pairs(entityList) do
     -- Create resistance entry
     local resistTable = {
       type = _DamageType,
     }
-    
+
     if _Percent and _Percent ~= 0 then
       resistTable.percent = _Percent
     end
@@ -69,13 +71,13 @@ local function addResistance(entityList, _DamageType, _Percent, _Decrease)
 
     -- Add to entity's resistance table
     if not entity.resistances then
-      entity.resistances = {resistTable}
+      entity.resistances = { resistTable }
     else
       table.insert(entity.resistances, resistTable)
     end
 
     log(entity.name .. " resistances: " .. serpent.dump(entity.resistances))
- end
+  end
 end
 
 -----------------
@@ -87,7 +89,7 @@ end
 for _, armor in pairs(data.raw["armor"]) do
   if armor.name ~= "hev-armor" then
     local value = 0
-    
+
     -- Find acid resistance value
     for _, resistance in pairs(armor.resistances) do
       if resistance.type == "acid" then
@@ -95,12 +97,12 @@ for _, armor in pairs(data.raw["armor"]) do
         break
       end
     end
-    
+
     -- Scale toxic resistance based on acid resistance
     -- Percent: acid/1.4, rounded to nearest 5
     -- Decrease: min(20, max(5, acid/4))
     addResistance(
-      {armor},
+      { armor },
       POLLUTION_DAMAGE_TYPE,
       math.floor((value / 1.4) / 5) * 5,
       math.min(20, math.max(5, math.floor(value / 4)))
@@ -113,7 +115,7 @@ end
 for type, typeTable in pairs(data.raw) do
   for name, entity in pairs(typeTable) do
     if entity.max_health ~= nil and entity.resistances ~= nil then
-      local fireResistance = {percent= 0, decrease = 0}
+      local fireResistance = { percent = 0, decrease = 0 }
 
       -- Find fire resistance values
       for _, resistance in pairs(entity.resistances) do
@@ -124,7 +126,7 @@ for type, typeTable in pairs(data.raw) do
 
       -- Apply same fire resistance values to toxic damage
       addResistance(
-        {entity},
+        { entity },
         POLLUTION_DAMAGE_TYPE,
         fireResistance.percent or 0,
         fireResistance.decrease or 0
