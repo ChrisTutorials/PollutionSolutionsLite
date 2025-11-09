@@ -363,17 +363,72 @@ toxicflame.particle.line_length = 1
 
 ---
 
+### 12. Sprite Variation Count (Critical)
+
+**Issue**: Base game entities like storage-tank have multiple sprite variations (e.g., 2 different visual styles). When using `deepcopy()` and providing only a single custom graphic, must reset `variation_count` and `repeat_count`.
+
+**Symptom**: Error shows sprite rectangle trying to read beyond image bounds horizontally:
+
+```text
+sprite rectangle (left_top=220x0, right_bottom=440x108) is outside actual sprite size (220x108)
+```
+
+**Root Cause**: Base game storage-tank has `variation_count = 2`, which multiplies sprite width by 2 to read two side-by-side variants from the sprite sheet.
+
+**Old Approach** (causes error):
+
+```lua
+-- Copy storage-tank and change filename
+local pollutioncollector = util.table.deepcopy(data.raw["storage-tank"]["storage-tank"])
+pollutioncollector.pictures.picture.sheets[1].filename = "my-single-sprite.png"
+pollutioncollector.pictures.picture.sheets[1].width = 220
+pollutioncollector.pictures.picture.sheets[1].height = 108
+-- MISSING: variation_count still = 2, so tries to read 440px width!
+```
+
+**New Approach** (works correctly):
+
+```lua
+local sheet = pollutioncollector.pictures.picture.sheets[1]
+sheet.filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png"
+sheet.width = 220
+sheet.height = 108
+sheet.frame_count = 1
+sheet.line_length = 1
+sheet.variation_count = 1  -- CRITICAL: Reset to 1 for single sprite
+sheet.repeat_count = 1     -- CRITICAL: Reset repeat count
+sheet.hr_version = nil     -- Remove HR version if not providing one
+```
+
+**Test Case**: Enhanced log file checking to catch sprite errors
+**Pattern**: `sprite rectangle.*is outside the actual sprite size`
+**Files Affected**: `prototypes/pollutioncollector.lua`
+
+**Prevention**: When using `deepcopy()` with custom graphics, ALWAYS reset:
+
+- `width`, `height` - Your image dimensions
+- `frame_count` - Animation frames (usually 1)
+- `line_length` - Frames per row (usually 1)  
+- `variation_count` - Number of visual variants (usually 1)
+- `repeat_count` - Repeat pattern (usually 1)
+- `hr_version` - Set to `nil` if not providing high-res version
+
+**Test Enhancement**: Added `check_factorio_log()` function to parse log file for graphics errors that don't appear in stdout/stderr.
+
+---
+
 ## Summary Statistics
 
-- **Total Issues Found**: 11
+- **Total Issues Found**: 12
 - **Files Modified**: 5
   - `prototypes/entity.lua`
-  - `prototypes/pollutioncollector.lua`
-  - `prototypes/projectiles.lua` (multiple issues)
-  - `data-final-fixes.lua`
-  - `prototypes/recipe.lua`
+  - `prototypes/pollutioncollector.lua` (issues #1, #12)
+  - `prototypes/projectiles.lua` (issues #5, #6, #11)
+  - `data-final-fixes.lua` (issue #8, #9)
+  - `prototypes/recipe.lua` (issue #1, #2)
 - **Test Success Rate**: 100% (all issues caught by headless validation)
 - **Test Runtime**: ~10 seconds
+- **Test Enhancement**: Log file checking added for graphics validation
 
 ## Best Practices
 

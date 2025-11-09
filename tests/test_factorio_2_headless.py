@@ -21,18 +21,19 @@ import json
 
 
 class FactorioMigrationTester:
-    def __init__(self, mod_dir: Path):
+    def __init__(self, mod_dir: Path, verbose: bool = False):
         self.mod_dir = mod_dir
         self.script_dir = mod_dir / "scripts"
         self.factorio_bin = None
         self.test_results = []
+        self.verbose = verbose
         
     def find_factorio(self) -> bool:
         """Find Factorio binary"""
         # Use validate_mod.py infrastructure
         try:
             sys.path.insert(0, str(self.script_dir))
-            from validate_mod import FactorioValidator
+            from validate_mod import FactorioValidator  # type: ignore
             validator = FactorioValidator()
             self.factorio_bin = validator.factorio_bin
             return self.factorio_bin is not None
@@ -132,6 +133,11 @@ class FactorioMigrationTester:
             
             output = result.stdout + result.stderr
             
+            if self.verbose:
+                print("\n--- Factorio Output (--dump-data) ---")
+                print(output)
+                print("--- End Output ---\n")
+            
             # Parse for errors
             errors = self.parse_error_output(output)
             
@@ -175,6 +181,32 @@ class FactorioMigrationTester:
             })
             return False, str(e)
     
+    def check_factorio_log(self) -> List[Dict[str, str]]:
+        """Check Factorio log file for errors (especially graphics errors)"""
+        # Factorio log is typically in the write directory
+        # Common locations: ~/.factorio/factorio-current.log or next to binary
+        log_locations = [
+            Path.home() / ".factorio" / "factorio-current.log",
+        ]
+        
+        if self.factorio_bin:
+            log_locations.append(self.factorio_bin.parent.parent / "factorio-current.log")
+        
+        for log_path in log_locations:
+            if log_path.exists():
+                try:
+                    content = log_path.read_text()
+                    # Look for recent errors (last 1000 lines - covers this test run)
+                    lines = content.split('\n')
+                    recent_content = '\n'.join(lines[-1000:])
+                    errors = self.parse_error_output(recent_content)
+                    if errors:
+                        return errors
+                except Exception as e:
+                    print(f"  Warning: Could not read log {log_path}: {e}")
+        
+        return []
+    
     def run_save_creation_test(self) -> Tuple[bool, str]:
         """Test that a save file can be created (runtime validation)"""
         print("\n" + "="*70)
@@ -201,8 +233,18 @@ class FactorioMigrationTester:
             
             output = result.stdout + result.stderr
             
-            # Parse for errors
+            if self.verbose:
+                print("\n--- Factorio Output (--create) ---")
+                print(output)
+                print("--- End Output ---\n")
+            
+            # Parse for errors in output
             errors = self.parse_error_output(output)
+            
+            # Also check Factorio log file (catches graphics errors that may not appear in stdout)
+            log_errors = self.check_factorio_log()
+            if log_errors:
+                errors.extend(log_errors)
             
             if errors:
                 error_summary = "\n".join([f"  - {err['message']}" for err in errors])
@@ -357,7 +399,7 @@ def main():
     # Find mod directory
     mod_dir = Path(__file__).parent.parent
     
-    tester = FactorioMigrationTester(mod_dir)
+    tester = FactorioMigrationTester(mod_dir, verbose=args.verbose)
     success = tester.run_all_tests()
     
     sys.exit(0 if success else 1)

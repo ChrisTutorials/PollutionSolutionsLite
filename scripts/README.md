@@ -10,11 +10,24 @@ Exports the mod to the Factorio mods directory, excluding development files.
 
 **Usage:**
 ```bash
-# Auto-detect destination (checks symlink or OS-specific default)
+# Auto-detect destination (checks config, symlink, or OS-specific default)
 python scripts/export_mod.py
 
 # Specify custom destination
 python scripts/export_mod.py /path/to/factorio/mods
+```
+
+**Configuration:**
+
+Create `scripts/export_config.yaml` (copy from `export_config.example.yaml`):
+
+```yaml
+# Option 1: Auto-detect from Factorio binary
+factorio_bin: /path/to/factorio/bin/x64/factorio
+
+# Option 2: Specify mods directory directly
+export:
+  mods_directory: /path/to/factorio/mods
 ```
 
 **What it does:**
@@ -25,8 +38,9 @@ python scripts/export_mod.py /path/to/factorio/mods
 
 **Destination resolution (in order):**
 1. Path provided as command-line argument
-2. Symlink at `./factorio/` (points to Factorio installation)
-3. OS-specific default:
+2. `export_config.yaml` (if present)
+3. Symlink at `./factorio/` (points to Factorio installation)
+4. OS-specific default:
    - **Linux:** `~/.factorio/mods`
    - **macOS:** `~/Library/Application Support/factorio/mods`
    - **Windows:** `%APPDATA%/Factorio/mods`

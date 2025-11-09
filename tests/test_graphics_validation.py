@@ -23,7 +23,7 @@ from typing import Dict, List, Tuple, Optional
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
-    from PIL import Image
+    from PIL import Image  # type: ignore
 except ImportError:
     print("ERROR: Pillow not installed. Install with: pip install Pillow")
     sys.exit(1)
@@ -135,13 +135,13 @@ class GraphicsValidator:
                 ):
                     all_valid = False
 
-            # High resolution: 440x216 (2x scale)
+            # High resolution: 438x215 (actual image size)
             hr_sprite = pollution_collector / "hr-pollution-collector.png"
             if hr_sprite.exists():
                 if not self.validate_sprite_rectangle(
                     hr_sprite,
-                    width=440,
-                    height=216,
+                    width=438,
+                    height=215,
                     frame_count=1,
                     line_length=1
                 ):

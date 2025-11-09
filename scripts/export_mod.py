@@ -20,6 +20,12 @@ from pathlib import Path
 from typing import Optional
 import subprocess
 
+try:
+    import yaml  # type: ignore
+    YAML_AVAILABLE = True
+except ImportError:
+    YAML_AVAILABLE = False
+
 
 class ModExporter:
     def __init__(self):
@@ -42,6 +48,54 @@ class ModExporter:
             '.vscode',
             '.idea'
         ]
+        
+        # Load config if available
+        self.config = self.load_config()
+    
+    def load_config(self) -> dict:
+        """Load configuration from YAML file if available"""
+        config_paths = [
+            self.script_dir / 'export_config.yaml',
+            self.script_dir / 'validate_config.yaml',  # Reuse validate config
+            self.mod_source_dir / 'export_config.yaml',
+        ]
+        
+        for config_path in config_paths:
+            if config_path.exists():
+                if YAML_AVAILABLE:
+                    try:
+                        with open(config_path) as f:
+                            return yaml.safe_load(f) or {}  # type: ignore
+                    except Exception as e:
+                        print(f"Warning: Could not load config {config_path}: {e}")
+                else:
+                    print(f"Note: Found config {config_path} but PyYAML not installed")
+                    print("  Install with: pip install PyYAML")
+        
+        return {}
+    
+    def get_mods_dir_from_config(self) -> Optional[Path]:
+        """Get mods directory from config file"""
+        if not self.config:
+            return None
+        
+        # Check for export-specific config
+        if 'export' in self.config and 'mods_directory' in self.config['export']:
+            mods_dir = self.config['export']['mods_directory']
+            if mods_dir:
+                return Path(mods_dir).expanduser()
+        
+        # Check if we can derive from factorio_bin path
+        if 'factorio_bin' in self.config and self.config['factorio_bin']:
+            bin_path = Path(self.config['factorio_bin']).expanduser()
+            if bin_path.exists():
+                # Factorio structure: factorio/bin/x64/factorio -> factorio/mods
+                factorio_root = bin_path.parent.parent.parent
+                mods_dir = factorio_root / 'mods'
+                if mods_dir.exists():
+                    return mods_dir
+        
+        return None
     
     def get_default_mods_dir(self) -> Optional[Path]:
         """Determine default Factorio mods directory based on OS"""
@@ -64,12 +118,17 @@ class ModExporter:
             # User provided explicit path
             return Path(user_path)
         
-        # Check for symlink
+        # 1. Check config file first
+        config_dir = self.get_mods_dir_from_config()
+        if config_dir and config_dir.exists():
+            return config_dir
+        
+        # 2. Check for symlink
         symlink = self.mod_source_dir / 'factorio'
         if symlink.is_symlink() or (symlink.exists() and symlink.is_dir()):
             return symlink / 'mods'
         
-        # Fall back to default based on OS
+        # 3. Fall back to default based on OS
         return self.get_default_mods_dir()
     
     def should_exclude(self, path: Path, base_path: Path) -> bool:

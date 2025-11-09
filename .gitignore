@@ -2,6 +2,7 @@
 factorio/
 scripts/validate_config.yaml
 scripts/validate_config.sh
+scripts/export_config.yaml
 scripts/__pycache__/
 *.pyc
 .DS_Store

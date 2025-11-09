@@ -16,29 +16,22 @@ assert(
   pollutioncollector.pictures.picture.sheets,
   "Pollution collector pictures.picture.sheets not found"
 )
-assert(
-  pollutioncollector.pictures.picture.sheets[1],
-  "Pollution collector pictures.picture.sheets[1] not found"
-)
-setLayerGraphics(
-  pollutioncollector.pictures.picture.sheets[1],
-  GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
-  GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png"
-)
 
--- Reset sprite dimensions to match our custom 220x108 image
--- Base game storage-tank has different dimensions that don't apply
-local sheet = pollutioncollector.pictures.picture.sheets[1]
-sheet.width = 220
-sheet.height = 108
-sheet.frame_count = 1
-sheet.line_length = 1
-if sheet.hr_version then
-  sheet.hr_version.width = 220
-  sheet.hr_version.height = 108
-  sheet.hr_version.frame_count = 1
-  sheet.hr_version.line_length = 1
-end
+-- COMPLETE REPLACEMENT of picture structure with single clean sprite
+-- Don't try to patch base game structure - replace it entirely
+pollutioncollector.pictures = {
+  picture = {
+    sheets = {
+      {
+        filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
+        width = 220,
+        height = 108,
+        frame_count = 1,
+        line_length = 1
+      }
+    }
+  }
+}
 
 pollutioncollector.fluid_box.filter = "polluted-air"
 for i = 1, #pollutioncollector.fluid_box.pipe_connections, 1 do

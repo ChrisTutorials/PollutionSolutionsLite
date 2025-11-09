@@ -1,0 +1,16 @@
+# Mod Export Configuration Example
+# Copy this file to export_config.yaml and customize for your system
+
+# Option 1: Specify Factorio binary (will auto-detect mods directory)
+factorio_bin: /path/to/factorio/bin/x64/factorio
+
+# Option 2: Specify mods directory directly (takes precedence over factorio_bin)
+export:
+  mods_directory: /path/to/factorio/mods
+
+# Common paths:
+# Linux default: ~/.factorio/mods
+# Linux Steam: ~/.steam/steam/steamapps/common/Factorio/../mods
+# macOS: ~/Library/Application Support/factorio/mods
+# Windows: %APPDATA%/Factorio/mods
+# Custom install: /run/media/USER/DISK/factorio/mods
