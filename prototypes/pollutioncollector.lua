@@ -5,6 +5,11 @@ require("util")
 -- Entity --
 ------------
 
+-- Sprite sheet configuration
+local COLLECTOR_SPRITE_WIDTH = 220
+local COLLECTOR_SPRITE_HEIGHT = 108
+local COLLECTOR_SPRITE_SCALE = 0.4
+
 local pollutioncollector = util.table.deepcopy(data.raw["storage-tank"]["storage-tank"])
 pollutioncollector.name = "pollutioncollector"
 pollutioncollector.order = "z"
@@ -12,35 +17,41 @@ pollutioncollector.minable.result = "pollutioncollector"
 pollutioncollector.crafting_categories = { "pollution" }
 pollutioncollector.icon = GRAPHICS .. "icons/pollution-collector.png"
 pollutioncollector.icon_size = 64
+
 -- Replace main entity sprite with pollution collector sprite
 -- Storage-tank entity handles 4-way rotation automatically
 -- NOTE: Single sprite used for all 4 rotations - storage-tank repeats it
--- frames=1, line_length=1 ensures we use the same sprite for all directions
+-- CRITICAL: Override all inherited picture data to prevent frame misinterpretation
+assert(
+  pollutioncollector.pictures and pollutioncollector.pictures.picture,
+  "Collector pictures not found"
+)
+
+local base_sheet = {
+  filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
+  priority = "high",
+  width = COLLECTOR_SPRITE_WIDTH,
+  height = COLLECTOR_SPRITE_HEIGHT,
+  frames = 1,
+  frame_count = 1,
+  line_length = 1,
+  scale = COLLECTOR_SPRITE_SCALE,
+}
+
 pollutioncollector.pictures = {
   picture = {
-    sheets = {
-      {
-        filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
-        priority = "high",
-        width = 220,
-        height = 108,
-        frames = 1,
-        frame_count = 1,
-        line_length = 1,
-      },
-      {
-        filename = GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png",
-        priority = "high",
-        width = 438,
-        height = 215,
-        frames = 1,
-        frame_count = 1,
-        line_length = 1,
-        scale = 0.5,
-      },
-    },
+    sheets = { base_sheet },
   },
 }
+
+-- Set HR graphics if available (auto-scales to 2x dimensions with 0.5x scale)
+if base_sheet.hr_version then
+  setLayerGraphics(
+    base_sheet,
+    GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
+    GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png"
+  )
+end
 
 -- Remove inherited GUI-only properties that have sprite references
 -- These would cause sprite rectangle errors as they reference wrong dimensions

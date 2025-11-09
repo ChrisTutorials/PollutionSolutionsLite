@@ -1,8 +1,8 @@
 -- Migration for version 1.0.20: Unlock barrel recipes based on fluid-handling tech
--- 
+--
 -- This migration unlocks the base game's barreling recipes for polluted air and toxic sludge
 -- if the player has already researched "fluid-handling" technology.
--- 
+--
 -- The barrel recipes are provided by the base game, not this mod.
 -- We only enable them if the technology is researched.
 

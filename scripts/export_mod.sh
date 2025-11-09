@@ -118,9 +118,9 @@ fifi
 
 # Copy mod (excluding .git directory and development files)# Copy mod (excluding .git directory and development files)
 
-echo "Copying mod files..."echo "Copying mod files..."
+echo "Copying mod files..."
 
-rsync -av --exclude='.git' --exclude='.gitignore' --exclude='.github' --exclude='scripts' --exclude='docs' --exclude='tests' --exclude='run_tests.lua' --exclude='factorio' "$MOD_SOURCE_DIR/" "$DEST_DIR/$MOD_NAME/" 2>/dev/null || cp -r "$MOD_SOURCE_DIR" "$DEST_DIR/$MOD_NAME"rsync -av --exclude='.git' --exclude='.gitignore' --exclude='.github' --exclude='scripts' --exclude='docs' --exclude='tests' --exclude='run_tests.lua' --exclude='factorio' "$MOD_SOURCE_DIR/" "$DEST_DIR/$MOD_NAME/" 2>/dev/null || cp -r "$MOD_SOURCE_DIR" "$DEST_DIR/$MOD_NAME"
+rsync -av --exclude='.git' --exclude='.gitignore' --exclude='.github' --exclude='scripts' --exclude='docs' --exclude='tests' --exclude='run_tests.lua' --exclude='factorio' --exclude='.internal-bugs' "$MOD_SOURCE_DIR/" "$DEST_DIR/$MOD_NAME/" 2>/dev/null || cp -r "$MOD_SOURCE_DIR" "$DEST_DIR/$MOD_NAME"
 
 
 

@@ -231,20 +231,20 @@ function EntityDied(event)
     if blueAverage >= 1 then
       -- Random drop with average based on settings
       quantity = 2 * math.random() * blueAverage
-      loot = { type = "item", name = "blue-xenomass", count = math.floor(quantity + 0.5) }
+      loot = { name = "blue-xenomass", count = math.floor(quantity + 0.5) }
     elseif blueAverage > math.random() then
       -- Fractional chance for single item
-      loot = { type = "item", name = "blue-xenomass", count = 1 }
+      loot = { name = "blue-xenomass", count = 1 }
     end
   elseif alien.type == "turret" then
     -- Worm turrets always drop blue xenomass
     quantity = 2 * math.random() * 20
-    loot = { type = "item", name = "blue-xenomass", count = math.floor(quantity + 0.5) }
+    loot = { name = "blue-xenomass", count = math.floor(quantity + 0.5) }
   elseif alien.type == "unit-spawner" then
     -- Spawners drop red xenomass, amount decreases with each nest killed
     storage.nestsKilled = storage.nestsKilled + 1
     quantity = settings.global["zpollution-red-per-alien"].value / storage.nestsKilled
-    loot = { type = "item", name = "red-xenomass", count = math.ceil(quantity) }
+    loot = { name = "red-xenomass", count = math.ceil(quantity) }
   end
 
   --log(create " .. quantity .. " xenomass")

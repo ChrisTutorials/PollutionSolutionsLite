@@ -55,7 +55,7 @@ end
 
 -- Test utilities
 local function create_mock_entity(name, valid)
-  valid = valid ~= false  -- Default to true
+  valid = valid ~= false -- Default to true
   return {
     name = name,
     valid = valid,
@@ -219,7 +219,7 @@ print("\n=== Test: IsPositionEqual with Matching Positions ===")
 local entity1 = create_mock_entity("test1", true)
 local entity2 = {
   surface = "nauvis",
-  position = { x = 0, y = 0 }
+  position = { x = 0, y = 0 },
 }
 
 assert(IsPositionEqual(entity1, entity2) == true, "Should return true for matching positions")
@@ -235,7 +235,7 @@ entity3.position = { x = 10, y = 20 }
 
 local entity4 = {
   surface = "nauvis",
-  position = { x = 0, y = 0 }
+  position = { x = 0, y = 0 },
 }
 
 assert(IsPositionEqual(entity3, entity4) == false, "Should return false for different positions")
@@ -249,11 +249,11 @@ print("\n=== Test: Event Handler with Nil created_entity ===")
 -- Simulate OnBuiltEntity with nil entity
 local function OnBuiltEntity_Safe(event)
   local entity = event.created_entity
-  
+
   if not entity or not entity.valid then
     return
   end
-  
+
   if IsToxicDump(entity) then
     return "added-toxic-dump"
   end

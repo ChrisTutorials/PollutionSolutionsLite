@@ -69,6 +69,7 @@ class ModExporter:
             '.stylua.toml',
             'PROJECT_STRUCTURE.md',
             'validate_config.sh',
+            '.internal-bugs',
             '*.zip',
             '*.tar.gz'
         ]
@@ -291,8 +292,9 @@ class ModExporter:
     
     def create_archive(self, mod_dest: Path) -> bool:
         """Create zip archive of the exported mod with incremental versioning"""
-        dest_parent = mod_dest.parent
-        version = self.get_next_version(dest_parent)
+        # Archives go to project root, not the destination folder
+        archive_dir = self.mod_source_dir
+        version = self.get_next_version(archive_dir)
         
         # Update info.json in source directory
         self.update_info_version(version)
@@ -301,7 +303,7 @@ class ModExporter:
         self.update_exported_info_version(mod_dest, version)
         
         archive_name = f"{self.mod_name}_{version}.zip"
-        archive_path = dest_parent / archive_name
+        archive_path = archive_dir / archive_name
         
         print(f"\nCreating archive: {archive_name}")
         try:

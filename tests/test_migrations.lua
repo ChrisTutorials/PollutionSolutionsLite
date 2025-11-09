@@ -19,7 +19,7 @@ local MockGame = {}
 local function create_mock_recipe(name)
   return {
     name = name,
-    enabled = false,  -- Start disabled
+    enabled = false, -- Start disabled
   }
 end
 
@@ -59,24 +59,40 @@ function test_migration_1_0_20_all_recipes_present()
   }
 
   local technologies = {
-    ["fluid-handling"] = create_mock_technology("fluid-handling", true),  -- Mark as researched
+    ["fluid-handling"] = create_mock_technology("fluid-handling", true), -- Mark as researched
   }
 
   local force = create_mock_force(recipes, technologies)
 
   -- Execute: Run migration logic
-  for _, recipe_name in ipairs({ "fill-polluted-air-barrel", "empty-polluted-air-barrel",
-    "fill-toxic-sludge-barrel", "empty-toxic-sludge-barrel" }) do
+  for _, recipe_name in ipairs({
+    "fill-polluted-air-barrel",
+    "empty-polluted-air-barrel",
+    "fill-toxic-sludge-barrel",
+    "empty-toxic-sludge-barrel",
+  }) do
     if force.recipes[recipe_name] then
       force.recipes[recipe_name].enabled = force.technologies["fluid-handling"].researched
     end
   end
 
   -- Assert: All recipes should be enabled
-  assert(recipes["fill-polluted-air-barrel"].enabled == true, "fill-polluted-air-barrel should be enabled")
-  assert(recipes["empty-polluted-air-barrel"].enabled == true, "empty-polluted-air-barrel should be enabled")
-  assert(recipes["fill-toxic-sludge-barrel"].enabled == true, "fill-toxic-sludge-barrel should be enabled")
-  assert(recipes["empty-toxic-sludge-barrel"].enabled == true, "empty-toxic-sludge-barrel should be enabled")
+  assert(
+    recipes["fill-polluted-air-barrel"].enabled == true,
+    "fill-polluted-air-barrel should be enabled"
+  )
+  assert(
+    recipes["empty-polluted-air-barrel"].enabled == true,
+    "empty-polluted-air-barrel should be enabled"
+  )
+  assert(
+    recipes["fill-toxic-sludge-barrel"].enabled == true,
+    "fill-toxic-sludge-barrel should be enabled"
+  )
+  assert(
+    recipes["empty-toxic-sludge-barrel"].enabled == true,
+    "empty-toxic-sludge-barrel should be enabled"
+  )
 
   print("✓ All barrel recipes enabled correctly when present")
 end
@@ -96,8 +112,12 @@ function test_migration_1_0_20_missing_recipes()
 
   -- Execute: Run migration logic with nil checks (SHOULD NOT CRASH)
   local success, error_msg = pcall(function()
-    for _, recipe_name in ipairs({ "fill-polluted-air-barrel", "empty-polluted-air-barrel",
-      "fill-toxic-sludge-barrel", "empty-toxic-sludge-barrel" }) do
+    for _, recipe_name in ipairs({
+      "fill-polluted-air-barrel",
+      "empty-polluted-air-barrel",
+      "fill-toxic-sludge-barrel",
+      "empty-toxic-sludge-barrel",
+    }) do
       if force.recipes[recipe_name] then
         force.recipes[recipe_name].enabled = force.technologies["fluid-handling"].researched
       end
@@ -119,7 +139,7 @@ function test_migration_1_0_20_tech_not_researched()
   }
 
   local technologies = {
-    ["fluid-handling"] = create_mock_technology("fluid-handling", false),  -- Not researched
+    ["fluid-handling"] = create_mock_technology("fluid-handling", false), -- Not researched
   }
 
   local force = create_mock_force(recipes, technologies)
@@ -155,8 +175,12 @@ function test_migration_1_0_20_partial_recipes()
   local force = create_mock_force(recipes, technologies)
 
   -- Execute: Run migration logic
-  for _, recipe_name in ipairs({ "fill-polluted-air-barrel", "empty-polluted-air-barrel",
-    "fill-toxic-sludge-barrel", "empty-toxic-sludge-barrel" }) do
+  for _, recipe_name in ipairs({
+    "fill-polluted-air-barrel",
+    "empty-polluted-air-barrel",
+    "fill-toxic-sludge-barrel",
+    "empty-toxic-sludge-barrel",
+  }) do
     if force.recipes[recipe_name] then
       force.recipes[recipe_name].enabled = force.technologies["fluid-handling"].researched
     end
@@ -183,7 +207,7 @@ function test_migration_1_0_20_multiple_forces()
     }
 
     local technologies = {
-      ["fluid-handling"] = create_mock_technology("fluid-handling", force_idx == 1),  -- Only first force has it
+      ["fluid-handling"] = create_mock_technology("fluid-handling", force_idx == 1), -- Only first force has it
     }
 
     forces[force_idx] = create_mock_force(recipes, technologies)
@@ -199,9 +223,18 @@ function test_migration_1_0_20_multiple_forces()
   end
 
   -- Assert: Each force has correct state
-  assert(forces[1].recipes["fill-polluted-air-barrel"].enabled == true, "Force 1 should have recipes enabled")
-  assert(forces[2].recipes["fill-polluted-air-barrel"].enabled == false, "Force 2 should have recipes disabled")
-  assert(forces[3].recipes["fill-polluted-air-barrel"].enabled == false, "Force 3 should have recipes disabled")
+  assert(
+    forces[1].recipes["fill-polluted-air-barrel"].enabled == true,
+    "Force 1 should have recipes enabled"
+  )
+  assert(
+    forces[2].recipes["fill-polluted-air-barrel"].enabled == false,
+    "Force 2 should have recipes disabled"
+  )
+  assert(
+    forces[3].recipes["fill-polluted-air-barrel"].enabled == false,
+    "Force 3 should have recipes disabled"
+  )
 
   print("✓ Migration correctly applies to multiple forces")
 end
