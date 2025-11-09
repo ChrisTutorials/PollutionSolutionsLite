@@ -18,10 +18,18 @@ local sludgePerMinute = 60 * (INCINERATOR_OUTPUT / INCINERATOR_EFFICIENCY) / MJ_
 
 incinerator.energy_source.emissions_per_minute = emissionsPerSludge * sludgePerMinute
 
+assert(incinerator.picture and incinerator.picture.layers, "Incinerator picture.layers not found")
+assert(incinerator.picture.layers[1], "Incinerator picture.layers[1] not found")
 incinerator.picture.layers[1].filename = GRAPHICS.."entity/incinerator/incinerator.png"
-incinerator.picture.layers[1].hr_version.filename = GRAPHICS.."entity/incinerator/hr-incinerator.png"
+if incinerator.picture.layers[1].hr_version then
+  incinerator.picture.layers[1].hr_version.filename = GRAPHICS.."entity/incinerator/hr-incinerator.png"
+end
+
+assert(incinerator.working_light_picture, "Incinerator working_light_picture not found")
 incinerator.working_light_picture.filename=GRAPHICS.."entity/incinerator/reactor-lights-color.png"
-incinerator.working_light_picture.hr_version.filename=GRAPHICS.."entity/incinerator/hr-reactor-lights-color.png"
+if incinerator.working_light_picture.hr_version then
+  incinerator.working_light_picture.hr_version.filename=GRAPHICS.."entity/incinerator/hr-reactor-lights-color.png"
+end
 incinerator.light_color={r=0.744, g=0.275, b=0.867}
 incinerator.heat_buffer.max_temperature=615
 
@@ -80,14 +88,33 @@ lowheater.order = "z"
 lowheater.minable.result = "low-heat-exchanger"
 lowheater.target_temperature = 315
 lowheater.icon = GRAPHICS.."icons/low-heat-boiler.png"
-lowheater.structure.north.layers[1].filename			=  GRAPHICS.."entity/low-heat-exchanger/lowheatex-N-idle.png"
-lowheater.structure.north.layers[1].hr_version.filename	=  GRAPHICS.."entity/low-heat-exchanger/hr-lowheatex-N-idle.png"
-lowheater.structure.east.layers[1].filename				=  GRAPHICS.."entity/low-heat-exchanger/lowheatex-E-idle.png"
-lowheater.structure.east.layers[1].hr_version.filename	=  GRAPHICS.."entity/low-heat-exchanger/hr-lowheatex-E-idle.png"
-lowheater.structure.south.layers[1].filename			=  GRAPHICS.."entity/low-heat-exchanger/lowheatex-S-idle.png"
-lowheater.structure.south.layers[1].hr_version.filename	=  GRAPHICS.."entity/low-heat-exchanger/hr-lowheatex-S-idle.png"
-lowheater.structure.west.layers[1].filename 			=  GRAPHICS.."entity/low-heat-exchanger/lowheatex-W-idle.png"
-lowheater.structure.west.layers[1].hr_version.filename	=  GRAPHICS.."entity/low-heat-exchanger/hr-lowheatex-W-idle.png"
+
+-- Fail fast: Assert structure exists
+assert(lowheater.structure, "Low-heat-exchanger structure not found")
+assert(lowheater.structure.north and lowheater.structure.north.layers, "Structure.north.layers not found")
+assert(lowheater.structure.east and lowheater.structure.east.layers, "Structure.east.layers not found")
+assert(lowheater.structure.south and lowheater.structure.south.layers, "Structure.south.layers not found")
+assert(lowheater.structure.west and lowheater.structure.west.layers, "Structure.west.layers not found")
+
+-- Set filenames
+lowheater.structure.north.layers[1].filename = GRAPHICS.."entity/low-heat-exchanger/lowheatex-N-idle.png"
+lowheater.structure.east.layers[1].filename = GRAPHICS.."entity/low-heat-exchanger/lowheatex-E-idle.png"
+lowheater.structure.south.layers[1].filename = GRAPHICS.."entity/low-heat-exchanger/lowheatex-S-idle.png"
+lowheater.structure.west.layers[1].filename = GRAPHICS.."entity/low-heat-exchanger/lowheatex-W-idle.png"
+
+-- Set HR versions if they exist
+if lowheater.structure.north.layers[1].hr_version then
+  lowheater.structure.north.layers[1].hr_version.filename = GRAPHICS.."entity/low-heat-exchanger/hr-lowheatex-N-idle.png"
+end
+if lowheater.structure.east.layers[1].hr_version then
+  lowheater.structure.east.layers[1].hr_version.filename = GRAPHICS.."entity/low-heat-exchanger/hr-lowheatex-E-idle.png"
+end
+if lowheater.structure.south.layers[1].hr_version then
+  lowheater.structure.south.layers[1].hr_version.filename = GRAPHICS.."entity/low-heat-exchanger/hr-lowheatex-S-idle.png"
+end
+if lowheater.structure.west.layers[1].hr_version then
+  lowheater.structure.west.layers[1].hr_version.filename = GRAPHICS.."entity/low-heat-exchanger/hr-lowheatex-W-idle.png"
+end
 lowheater.energy_source.min_working_temperature = 315
 lowheater.energy_source.max_temperature = 615
 lowheater.energy_source.minimum_glow_temperature = 100
