@@ -15,27 +15,45 @@ pollutioncollector.icon_size = 64
 -- Replace main entity sprite with clean single-frame sprite
 -- CRITICAL: Don't use deepcopy for pictures - inherited `frames` property causes issues
 -- Storage-tank has frames=2, which makes sprites read 2x width horizontally
+-- Storage-tank supports 4 rotations (north, east, south, west)
+-- Since we only have one sprite, use it for all 4 directions with HR support
+local pollutionCollectorSprite = {
+  sheets = {
+    {
+      filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
+      width = 220,
+      height = 108,
+      frames = 1,
+      frame_count = 1,
+      line_length = 1,
+      hr_version = {
+        filename = GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png",
+        width = 440,
+        height = 216,
+        frames = 1,
+        frame_count = 1,
+        line_length = 1,
+        scale = 0.5,
+      },
+    },
+  },
+}
+
 pollutioncollector.pictures = {
   picture = {
-    sheets = {
-      {
-        filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
-        width = 220,
-        height = 108,
-        frames = 1,  -- CRITICAL: Must be 1 (storage-tank has frames=2)
-        frame_count = 1,
-        line_length = 1
-      }
-    }
-  }
+    north = pollutionCollectorSprite,
+    east = pollutionCollectorSprite,
+    south = pollutionCollectorSprite,
+    west = pollutionCollectorSprite,
+  },
 }
 
 -- Remove inherited GUI-only properties that have sprite references
 -- These would cause sprite rectangle errors as they reference wrong dimensions
-pollutioncollector.window_background = nil  -- Storage tank GUI window
-pollutioncollector.fluid_background = nil   -- Storage tank GUI fluid display
-pollutioncollector.water_reflection = nil   -- Water reflection rendering (has variation_count=1)
-pollutioncollector.circuit_connector = nil  -- Circuit network UI (optional removal)
+pollutioncollector.window_background = nil -- Storage tank GUI window
+pollutioncollector.fluid_background = nil -- Storage tank GUI fluid display
+pollutioncollector.water_reflection = nil -- Water reflection rendering (has variation_count=1)
+pollutioncollector.circuit_connector = nil -- Circuit network UI (optional removal)
 
 pollutioncollector.fluid_box.filter = "polluted-air"
 for i = 1, #pollutioncollector.fluid_box.pipe_connections, 1 do
