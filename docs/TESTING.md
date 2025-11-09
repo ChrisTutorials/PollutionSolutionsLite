@@ -31,14 +31,18 @@ Unit tests verify individual functions and calculations work correctly in isolat
 **Location**: `tests/test_*.lua`
 
 **Coverage**:
+
 - `test_constants.lua`: Validates all constants are properly defined
 - `test_util.lua`: Tests utility functions for prototype creation
 
 **Running**:
+
 ```lua
+
 -- In Factorio console or test script
 require("tests.test_constants")
 require("tests.test_util")
+
 ```
 
 ### 2. Integration Tests
@@ -46,6 +50,7 @@ require("tests.test_util")
 Integration tests verify that mod systems work together correctly within the game.
 
 **Test Areas**:
+
 - Entity lifecycle (build, destroy, damage)
 - Pollution collection and conversion
 - Toxic dump behavior
@@ -57,6 +62,7 @@ Integration tests verify that mod systems work together correctly within the gam
 Full gameplay scenarios that test the mod in realistic conditions.
 
 **Scenarios**:
+
 - Early game pollution management
 - Mid game scaling with multiple collectors
 - Late game incinerator power systems
@@ -67,12 +73,14 @@ Full gameplay scenarios that test the mod in realistic conditions.
 ### Method 1: Manual In-Game Testing
 
 1. **Install the Mod**:
+
    ```bash
+
    # Copy mod to Factorio mods folder
    # Windows: %APPDATA%/Factorio/mods/
    # Linux: ~/.factorio/mods/
    # macOS: ~/Library/Application Support/factorio/mods/
-   
+
    cp -r PollutionSolutionsLite "$FACTORIO_MODS_DIR/"
    ```
 
@@ -85,7 +93,9 @@ Full gameplay scenarios that test the mod in realistic conditions.
 factorio-test provides automated testing within Factorio.
 
 1. **Install factorio-test**:
+
    ```bash
+
    # Download factorio-test from mod portal or GitHub
    # https://mods.factorio.com/mod/factorio-test
    # or https://github.com/GlassBricks/FactorioTest
@@ -100,14 +110,18 @@ factorio-test provides automated testing within Factorio.
 factorio-check allows headless testing with Python scripts.
 
 1. **Install factorio-check**:
+
    ```bash
+
    pip install factorio-check
    ```
 
 2. **Create Test Scenarios**: Write scenario scripts
 
 3. **Run Tests**:
+
    ```bash
+
    factorio-check run --mod-directory . --scenario test-scenario
    ```
 
@@ -117,7 +131,9 @@ factorio-check allows headless testing with Python scripts.
 
 1. Open Factorio console (~ key)
 2. Run test files:
+
    ```lua
+
    /c require("tests.test_bootstrap")
    /c require("tests.test_constants")
    /c require("tests.test_util")
@@ -128,10 +144,12 @@ factorio-check allows headless testing with Python scripts.
 Run unit tests standalone (requires mocking game environment):
 
 ```lua
+
 -- test_runner.lua
 dofile("tests/test_bootstrap.lua")
 dofile("tests/test_constants.lua")
 dofile("tests/test_util.lua")
+
 ```
 
 ### Automated Test Suite
@@ -139,10 +157,12 @@ dofile("tests/test_util.lua")
 If using factorio-test:
 
 ```lua
+
 -- In factorio-test environment
 local test_runner = require("__factorio-test__/test-runner")
 test_runner.run_file("tests/test_constants.lua")
 test_runner.run_file("tests/test_util.lua")
+
 ```
 
 ## Manual Testing
@@ -230,12 +250,13 @@ test_runner.run_file("tests/test_util.lua")
 ### Example Test Script
 
 ```lua
+
 -- scenario_test.lua
 -- Place in scenarios/pollution-solutions-test/
 
 script.on_init(function()
   local TestUtils = require("__PollutionSolutionsLite__/tests/test_bootstrap")
-  
+
   -- Test 1: Create pollution collector
   local surface = game.surfaces[1]
   local pos = {x=0, y=0}
@@ -245,17 +266,18 @@ script.on_init(function()
     force="player"
   }
   TestUtils.assertNotNil(collector, "Collector should be created")
-  
+
   -- Test 2: Add pollution
   surface.pollute(pos, 1000)
   local pollution_before = surface.get_pollution(pos)
   TestUtils.assert(pollution_before > 0, "Pollution should be added")
-  
+
   -- Test 3: Wait and check collection
   -- (Would need tick-based testing here)
-  
+
   TestUtils.log("All scenario tests passed!")
 end)
+
 ```
 
 ### Continuous Integration
@@ -263,6 +285,7 @@ end)
 For CI/CD pipelines:
 
 ```yaml
+
 # .github/workflows/test.yml (example)
 name: Factorio Mod Tests
 
@@ -272,22 +295,27 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+
       - uses: actions/checkout@v2
-      
+
       - name: Download Factorio
+
         run: |
           # Download Factorio headless
           wget https://factorio.com/get-download/stable/headless/linux64
-          
+
       - name: Install Mod
+
         run: |
           mkdir -p ~/.factorio/mods
           cp -r . ~/.factorio/mods/PollutionSolutionsLite
-          
+
       - name: Run Tests
+
         run: |
           # Run factorio with test scenario
           factorio --start-server-load-scenario test-scenario
+
 ```
 
 ## Factorio 2.0 Compatibility Checklist
@@ -302,7 +330,9 @@ jobs:
 ### API Changes to Verify
 
 - [ ] **Recipe Format**: Ensure recipes use results array format
+
   ```lua
+
   -- Old: result = "item-name", result_count = 5
   -- New: results = {{type="item", name="item-name", amount=5}}
   ```
@@ -333,21 +363,25 @@ jobs:
 ### Common Issues
 
 **Mod won't load**:
+
 - Check factorio-current.log for errors
 - Verify info.json syntax
 - Ensure all dependencies are correct
 
 **Entities don't appear**:
+
 - Check data stage logs
 - Verify prototype definitions
 - Test with minimal mod list
 
 **Runtime errors**:
+
 - Check control.lua for API usage
 - Verify event handlers
 - Test entity lifecycle
 
 **Performance issues**:
+
 - Profile tick functions
 - Check collection intervals
 - Optimize neighbor scanning
@@ -355,6 +389,7 @@ jobs:
 ### Debug Mode
 
 Enable debug in Factorio:
+
 1. Options → Other → Show debug info
 2. F4 → Enable various debug overlays
 3. F5 → Show entity info
@@ -363,11 +398,13 @@ Enable debug in Factorio:
 ### Log Analysis
 
 Check logs in:
+
 - Windows: `%APPDATA%/Factorio/factorio-current.log`
 - Linux: `~/.factorio/factorio-current.log`
 - macOS: `~/Library/Application Support/factorio/factorio-current.log`
 
 Look for:
+
 - Error messages
 - Stack traces
 - Performance warnings

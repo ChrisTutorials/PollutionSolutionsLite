@@ -7,38 +7,41 @@ Comprehensive test suite that validates Factorio 2.0 API compatibility using **r
 ## Quick Start
 
 ```bash
+
 # Run all migration tests
 python tests/test_factorio_2_headless.py
 
 # View detailed output
 python tests/test_factorio_2_headless.py --verbose
-```
+
+```text
 
 ## What Gets Tested
 
-✅ **Data Loading** - All prototypes load without errors  
-✅ **Recipe Format** - Ingredients/results have required `type` field  
-✅ **Collision Masks** - Dictionary format with `layers` key  
-✅ **Pipe Connections** - Have `direction` and use `flow_direction`  
-✅ **Emissions** - Dictionary format for pollution types  
-✅ **Fuel Categories** - Proper singular/plural usage  
-✅ **Sprite Flags** - No deprecated flags like `compressed`  
-✅ **Barrel System** - Correct base barrel references  
+✅ **Data Loading** - All prototypes load without errors
+✅ **Recipe Format** - Ingredients/results have required `type` field
+✅ **Collision Masks** - Dictionary format with `layers` key
+✅ **Pipe Connections** - Have `direction` and use `flow_direction`
+✅ **Emissions** - Dictionary format for pollution types
+✅ **Fuel Categories** - Proper singular/plural usage
+✅ **Sprite Flags** - No deprecated flags like `compressed`
+✅ **Barrel System** - Correct base barrel references
 ✅ **Save Creation** - Runtime validation via test save
 
 ## Test Results
 
 Current status: **✓ All tests passing**
 
-```
+```text
 Total tests: 3
 Passed: 3
 Failed: 0
 
 ✓ PASS: Data Loading
-✓ PASS: Save Creation  
+✓ PASS: Save Creation
 ✓ PASS: Entity Existence
-```
+
+```text
 
 ## Why Headless Testing?
 
@@ -50,6 +53,7 @@ Rather than mocking Factorio's API (complex, error-prone, outdated quickly), we:
 4. **Validate** against known migration patterns
 
 **Benefits:**
+
 - Source of truth (real Factorio engine)
 - Catches issues mocking would miss
 - No mock maintenance burden
@@ -84,29 +88,36 @@ See [FACTORIO_2_MIGRATION_TESTS.md](../docs/FACTORIO_2_MIGRATION_TESTS.md) for d
 ### Local Development
 
 ```bash
+
 # After making changes
 python tests/test_factorio_2_headless.py
-```
+
+```text
 
 ### CI/CD
 
 ```yaml
+
 # Example GitHub Actions
+
 - name: Run Factorio 2.0 Migration Tests
   run: python tests/test_factorio_2_headless.py
-```
+
+```text
 
 ### Pre-commit Hook
 
 ```bash
 #!/bin/bash
+
 # .git/hooks/pre-commit
 python tests/test_factorio_2_headless.py || exit 1
-```
+
+```text
 
 ## Test Architecture
 
-```
+```text
 test_factorio_2_headless.py
 ├── FactorioMigrationTester class
 │   ├── find_factorio() - Locate binary
@@ -120,13 +131,15 @@ test_factorio_2_headless.py
     ├── Pipe connection issues
     ├── Emission format issues
     └── Fuel category issues
-```
+
+```text
 
 ## Error Pattern Examples
 
 The test parses specific Factorio error patterns:
 
 ```python
+
 # Missing ingredient type
 r'Key "type" not found in property tree at ROOT\.recipe\.([^.]+)\.ingredients'
 
@@ -135,7 +148,8 @@ r'Value must be a dictionary in property tree at ROOT\.[^.]+\.([^.]+)\.collision
 
 # Deprecated sprite flag
 r'compressed is unknown sprite flag'
-```
+
+```text
 
 ## Adding New Tests
 
@@ -155,7 +169,8 @@ Create `scripts/validate_config.yaml`:
 
 ```yaml
 factorio_bin: /path/to/factorio/bin/x64/factorio
-```
+
+```text
 
 ### Tests timeout
 
@@ -163,21 +178,23 @@ Increase timeout in test file (default: 60 seconds):
 
 ```python
 timeout=120  # Increase if needed
-```
+
+```text
 
 ### False positives
 
 Check if error is from base game vs mod:
 
-```
+```text
 Error pattern: "Modifications: Pollution Solutions Lite"
               vs "Modifications: Base mod"
-```
+
+```text
 
 ## Performance
 
 - **Data loading test**: ~3-5 seconds
-- **Save creation test**: ~5-8 seconds  
+- **Save creation test**: ~5-8 seconds
 - **Total runtime**: ~10 seconds
 
 Fast enough for pre-commit hooks and CI/CD.

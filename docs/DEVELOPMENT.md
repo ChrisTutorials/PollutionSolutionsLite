@@ -4,7 +4,7 @@ This document contains detailed technical information for developers working on 
 
 ## File Structure
 
-```
+```text
 PollutionSolutionsLite/
 ├── control.lua              # Runtime logic and event handlers
 ├── data.lua                 # Prototype loading
@@ -27,23 +27,27 @@ PollutionSolutionsLite/
 ├── migrations/             # Save game migrations
 ├── graphics/              # Sprites and icons
 └── locale/               # Translations
-```
+
+```text
 
 ## Code Organization
 
 ### control.lua
 Main runtime script with event handlers:
+
 - Entity lifecycle management
 - Tick-based processing loops
 - Pollution conversion mechanics
 
 ### prototypes/
 All game prototype definitions:
+
 - Separated by type for maintainability
 - Uses util.lua helper functions for prototype creation
 
 ### constants.lua
 Central configuration:
+
 - All magic numbers defined here
 - Settings-based runtime values
 
@@ -59,6 +63,7 @@ The pollution collector system runs periodically to collect pollution from chunk
 - Converts to polluted-air fluid
 
 **Implementation Details:**
+
 - Registered in global.pollutioncollectors table
 - Each collector tracks its position and entity
 - Processes on tick event when interval expires
@@ -76,6 +81,7 @@ The toxic dump periodically releases stored fluids as pollution:
 - Creates visual effects (smoke, toxic clouds)
 
 **Implementation Details:**
+
 - Registered in global.toxicdumps table
 - Checks fluidbox contents each cycle
 - Converts fluids back to pollution using ratios
@@ -92,6 +98,7 @@ When alien entities die, they drop xenomass materials:
 - Spawns items at death position
 
 **Implementation Details:**
+
 - Checks entity.force.name for alien forces
 - Supports vanilla "enemy" force
 - Supports Biter Factions mod forces
@@ -110,6 +117,7 @@ Prevents pollution deletion by releasing stored pollution when entities are dest
 - Releases to atmosphere at entity position
 
 **Implementation Details:**
+
 - Uses on_pre_player_mined_item and on_entity_died events
 - Checks all fluidboxes in entity
 - Converts fluids to pollution using constants
@@ -118,16 +126,19 @@ Prevents pollution deletion by releasing stored pollution when entities are dest
 ## Event Flow
 
 ### Initialization
+
 1. `script.on_init()` - First time mod is added
 2. `InitGlobals()` - Initialize global tables
 3. Scan existing entities for collectors/dumps
 
 ### Configuration Change
+
 1. `script.on_configuration_changed()` - Mod update or change
 2. `InitGlobals()` - Reinitialize global state
 3. Rescan world for entities
 
 ### Tick Processing
+
 1. `OnTick(event)` - Called every game tick
 2. Check if collection interval elapsed
 3. Process all registered collectors
@@ -135,6 +146,7 @@ Prevents pollution deletion by releasing stored pollution when entities are dest
 5. Process all registered dumps
 
 ### Entity Lifecycle
+
 1. **Built**: `OnBuiltEntity()` - Register collector/dump
 2. **Destroyed**: `OnEntityPreRemoved()` - Unregister and disperse pollution
 3. **Died**: `EntityDied()` - Handle xenomass drops
@@ -142,6 +154,7 @@ Prevents pollution deletion by releasing stored pollution when entities are dest
 ## Testing
 
 See [TESTING.md](TESTING.md) for comprehensive testing guide including:
+
 - Unit tests
 - Integration tests
 - Manual testing procedures
