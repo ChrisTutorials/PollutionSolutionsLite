@@ -266,19 +266,19 @@ function EntityDied(event)
           event.cause.type .. " from force " .. event.force.name .. " killed " .. alien.name .. "."
         )
       end
-      -- Factorio 2.0+ API: Create ItemStackDefinition with type field
+      -- Factorio 2.0+ API: spill_item_stack with items array parameter
       alien.surface.spill_item_stack({
         position = alien.position,
-        stack = { type = "item", name = loot.name, count = loot.count },
+        items = { loot },
         force = alien.force,
       })
       return
     else
       -- Normal kills spawn neutral loot
-      -- Factorio 2.0+ API: Create ItemStackDefinition with type field
+      -- Factorio 2.0+ API: spill_item_stack with items array parameter
       alien.surface.spill_item_stack({
         position = alien.position,
-        stack = { type = "item", name = loot.name, count = loot.count },
+        items = { loot },
         force = nil,
       })
     end
