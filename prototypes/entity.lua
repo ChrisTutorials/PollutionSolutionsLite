@@ -24,6 +24,12 @@ incinerator.energy_source.emissions_per_minute = {
 
 assert(incinerator.picture and incinerator.picture.layers, "Incinerator picture.layers not found")
 assert(incinerator.picture.layers[1], "Incinerator picture.layers[1] not found")
+-- Set explicit dimensions to match our 154x158 sprite (nuclear-reactor has different size)
+incinerator.picture.layers[1].width = 154
+incinerator.picture.layers[1].height = 158
+incinerator.picture.layers[1].frames = 1  -- CRITICAL: nuclear-reactor has multiple frames
+incinerator.picture.layers[1].frame_count = 1
+incinerator.picture.layers[1].line_length = 1
 setLayerGraphics(
   incinerator.picture.layers[1],
   GRAPHICS .. "entity/incinerator/incinerator.png",

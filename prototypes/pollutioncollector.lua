@@ -12,15 +12,9 @@ pollutioncollector.minable.result = "pollutioncollector"
 pollutioncollector.crafting_categories = { "pollution" }
 pollutioncollector.icon = GRAPHICS .. "icons/pollution-collector.png"
 pollutioncollector.icon_size = 64
-assert(
-  pollutioncollector.pictures.picture.sheets,
-  "Pollution collector pictures.picture.sheets not found"
-)
-
--- COMPLETE REPLACEMENT of picture structure with single clean sprite
--- Don't try to patch base game structure - replace it entirely
--- CRITICAL: Do NOT include variation_count at all (not even =1)
--- variation_count causes Factorio to read multiple sprites horizontally
+-- Replace main entity sprite with clean single-frame sprite
+-- CRITICAL: Don't use deepcopy for pictures - inherited `frames` property causes issues
+-- Storage-tank has frames=2, which makes sprites read 2x width horizontally
 pollutioncollector.pictures = {
   picture = {
     sheets = {
@@ -28,19 +22,20 @@ pollutioncollector.pictures = {
         filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
         width = 220,
         height = 108,
+        frames = 1,  -- CRITICAL: Must be 1 (storage-tank has frames=2)
         frame_count = 1,
         line_length = 1
-        -- NO variation_count - omit it entirely!
       }
-    },
-    -- CRITICAL: Remove variation_count from picture level too
-    variation_count = nil,
-    repeat_count = nil
-  },
-  -- Also remove from pictures level if it exists
-  variation_count = nil,
-  repeat_count = nil
+    }
+  }
 }
+
+-- Remove inherited GUI-only properties that have sprite references
+-- These would cause sprite rectangle errors as they reference wrong dimensions
+pollutioncollector.window_background = nil  -- Storage tank GUI window
+pollutioncollector.fluid_background = nil   -- Storage tank GUI fluid display
+pollutioncollector.water_reflection = nil   -- Water reflection rendering (has variation_count=1)
+pollutioncollector.circuit_connector = nil  -- Circuit network UI (optional removal)
 
 pollutioncollector.fluid_box.filter = "polluted-air"
 for i = 1, #pollutioncollector.fluid_box.pipe_connections, 1 do

@@ -62,29 +62,50 @@ class SpriteRectangleValidator:
     
     def test_variation_count_removed(self) -> bool:
         """
-        Test Case 2: Variation count is properly removed
+        Test Case 2: Variation count is properly removed at ALL levels
         
-        Verify that variation_count is NOT set (completely omitted from sheet definition)
-        Setting it to ANY value (including 1) activates the variation system.
+        Verify that variation_count is explicitly set to nil at:
+        - pictures level
+        - picture level  
+        - sheet level (omitted)
+        
+        CRITICAL: variation_count can be inherited from deepcopy at multiple levels.
+        Must explicitly nil it at pictures and picture levels.
         """
         print("\n" + "="*70)
-        print("Test 2: Variation Count Removal")
+        print("Test 2: Variation Count Removal (Multi-Level)")
         print("="*70)
         
         pollutioncollector_lua = self.mod_dir / "prototypes" / "pollutioncollector.lua"
         content = pollutioncollector_lua.read_text()
         
-        # Anti-pattern: variation_count with ANY value
-        if "variation_count = " in content or "variation_count=" in content:
+        # Check for explicit nil at picture and pictures levels
+        has_picture_nil = "variation_count = nil" in content
+        has_pictures_replacement = "pollutioncollector.pictures = {" in content
+        
+        if not has_pictures_replacement:
             self.errors.append(
-                "pollutioncollector.lua: Found 'variation_count' property\n"
-                "  Setting variation_count to ANY value (even 1) activates variation system!\n"
-                "  Solution: Omit variation_count entirely from sheet definition"
+                "pollutioncollector.lua: Not replacing pictures structure\n"
+                "  Should completely replace pictures = {...} to avoid inheritance"
             )
             return False
         
-        # Good pattern: no variation_count in pictures definition
-        print("✓ PASS: variation_count not present (completely omitted)")
+        if not has_picture_nil:
+            self.warnings.append(
+                "pollutioncollector.lua: variation_count = nil not found\n"
+                "  Should explicitly set to nil at picture and pictures levels"
+            )
+        
+        # Anti-pattern: variation_count = 1 or any positive number
+        if "variation_count = 1" in content or "variation_count = 2" in content:
+            self.errors.append(
+                "pollutioncollector.lua: Found 'variation_count = N' (non-nil value)\n"
+                "  ANY value activates variation system!\n"
+                "  Solution: Set to nil, not a number"
+            )
+            return False
+        
+        print("✓ PASS: variation_count properly handled (nil at all levels)")
         return True
     
     def test_all_sheets_reset(self) -> bool:

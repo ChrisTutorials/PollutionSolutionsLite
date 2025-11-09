@@ -2,6 +2,8 @@
 
 This document catalogs all Factorio 2.0 API migration issues discovered during testing and the test cases created to catch them.
 
+**Issues Found and Fixed:** 13
+
 ## Test Infrastructure
 
 **Test Tool**: `tests/test_factorio_2_headless.py`
@@ -12,6 +14,11 @@ This document catalogs all Factorio 2.0 API migration issues discovered during t
 - Catches real Factorio validation errors
 - No need to maintain complex mocks
 - Tests against actual game engine
+
+**Limitations**:
+
+- Headless mode doesn't catch GUI-specific issues (see Issue #13)
+- Must test actual GUI game for complete validation
 
 ## Migration Issues Found and Fixed
 
@@ -373,7 +380,7 @@ toxicflame.particle.line_length = 1
 sprite rectangle (left_top=220x0, right_bottom=440x108) is outside actual sprite size (220x108)
 ```
 
-**Root Cause**: Base game storage-tank has `variation_count = 2`, which multiplies sprite width by 2 to read two side-by-side variants from the sprite sheet.
+**Root Cause**: Base game storage-tank has `variation_count = 2` at MULTIPLE LEVELS (pictures, picture, and sheets). This property multiplies sprite width by 2 to read side-by-side variants. Even when replacing the pictures structure, inherited properties can persist.
 
 **Old Approach** (causes error):
 
@@ -383,31 +390,49 @@ local pollutioncollector = util.table.deepcopy(data.raw["storage-tank"]["storage
 pollutioncollector.pictures.picture.sheets[1].filename = "my-single-sprite.png"
 pollutioncollector.pictures.picture.sheets[1].width = 220
 pollutioncollector.pictures.picture.sheets[1].height = 108
--- MISSING: variation_count still = 2, so tries to read 440px width!
+-- MISSING: variation_count inherited at multiple levels, tries to read 440px width!
 ```
+
+**CRITICAL INSIGHT**: `variation_count` can exist at THREE levels:
+1. `pictures.variation_count` (container level)
+2. `pictures.picture.variation_count` (picture level)
+3. `pictures.picture.sheets[N].variation_count` (sheet level)
 
 **New Approach** (works correctly):
 
 ```lua
-local sheet = pollutioncollector.pictures.picture.sheets[1]
-sheet.filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png"
-sheet.width = 220
-sheet.height = 108
-sheet.frame_count = 1
-sheet.line_length = 1
-sheet.variation_count = 1  -- CRITICAL: Reset to 1 for single sprite
-sheet.repeat_count = 1     -- CRITICAL: Reset repeat count
-sheet.hr_version = nil     -- Remove HR version if not providing one
+local pollutioncollector = util.table.deepcopy(data.raw["storage-tank"]["storage-tank"])
+
+-- COMPLETE REPLACEMENT with explicit nil at all levels
+pollutioncollector.pictures = {
+  picture = {
+    sheets = {
+      {
+        filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
+        width = 220,
+        height = 108,
+        frame_count = 1,
+        line_length = 1
+        -- Do NOT set variation_count at all
+      }
+    },
+    variation_count = nil,  -- CRITICAL: Explicitly nil at picture level
+    repeat_count = nil
+  },
+  variation_count = nil,  -- CRITICAL: Explicitly nil at pictures level
+  repeat_count = nil
+}
 ```
 
-**Test Case**: Enhanced log file checking to catch sprite errors
+**Test Case**: Enhanced log file checking + sprite rectangle validation test suite
 **Pattern**: `sprite rectangle.*is outside the actual sprite size`
 **Files Affected**: `prototypes/pollutioncollector.lua`
 
-**Prevention**: When using `deepcopy()` with custom graphics, ALWAYS reset:
+**Prevention**: When using `deepcopy()` with custom graphics:
 
-- `width`, `height` - Your image dimensions
-- `frame_count` - Animation frames (usually 1)
+1. **BEST**: Completely replace the pictures structure (don't patch)
+2. Explicitly set `variation_count = nil` at ALL levels (pictures, picture, sheets)
+3. Also reset: `repeat_count`, `frame_count`, `line_length`
 - `line_length` - Frames per row (usually 1)  
 - `variation_count` - Number of visual variants (usually 1)
 - `repeat_count` - Repeat pattern (usually 1)
@@ -430,13 +455,83 @@ sheet.hr_version = nil     -- Remove HR version if not providing one
 - **Test Runtime**: ~10 seconds
 - **Test Enhancement**: Log file checking added for graphics validation
 
+---
+
+### 13. Water Reflection Sprite Issues (GUI-Specific, Critical)
+
+**Issue**: Inherited `water_reflection` property from base entities can cause sprite rectangle errors in GUI mode (but not headless mode!)
+
+**Problem**:
+- Storage-tank has `water_reflection.pictures.variation_count = 1`
+- When deepcopying storage-tank, this property is inherited
+- Water reflections are only rendered in GUI mode, NOT in headless mode
+- This causes sprite rectangle errors that don't show up in `--dump-data` or `--create` tests
+
+**Error Message**:
+```
+The given sprite rectangle (left_top=220x0, right_bottom=440x108) is outside 
+the actual sprite size (left_top=0x0, right_bottom=220x108).
+__PollutionSolutionsLite__/graphics/entity/pollution-collector/pollution-collector.png
+```
+
+**Before (causes error)**:
+```lua
+local pollutioncollector = util.table.deepcopy(data.raw["storage-tank"]["storage-tank"])
+-- water_reflection property inherited with variation_count=1
+```
+
+**After (fixed)**:
+```lua
+local pollutioncollector = util.table.deepcopy(data.raw["storage-tank"]["storage-tank"])
+
+-- Remove GUI-only properties that have sprite references
+pollutioncollector.water_reflection = nil  -- Critical: has variation_count=1
+pollutioncollector.window_background = nil
+pollutioncollector.fluid_background = nil
+pollutioncollector.circuit_connector = nil  -- Optional removal
+```
+
+**Test Challenge**: This issue CANNOT be caught by headless tests because water reflections are GUI-only!
+
+**Detection Strategy**:
+1. Add recursive search for `variation_count` in all entity properties
+2. Log all sprite-related properties during data stage
+3. Test in actual GUI game, not just headless mode
+
+**Debug Approach**:
+```lua
+-- Search for variation_count anywhere in entity
+local function find_variation_count(tbl, path)
+  if type(tbl) ~= "table" then return end
+  for key, value in pairs(tbl) do
+    if key == "variation_count" and value ~= nil then
+      log("FOUND at " .. path .. "." .. key .. " = " .. tostring(value))
+    end
+    if type(value) == "table" then
+      find_variation_count(value, path .. "." .. key)
+    end
+  end
+end
+find_variation_count(entity, "entity_name")
+```
+
+**Pattern**: `The given sprite rectangle .* is outside the actual sprite size`
+**Files Affected**: `prototypes/pollutioncollector.lua`
+**Documented In**: `docs/SPRITE_RECTANGLE_DEBUG.md` (detailed debugging history)
+
+**Key Takeaway**: When deepcopying base entities, ALWAYS remove GUI-specific rendering properties (water_reflection, window_background, fluid_background) unless you're specifically implementing those features.
+
+---
+
 ## Best Practices
 
 1. **Use headless Factorio** - Don't mock the API, test against the real thing
-2. **Test early, test often** - Run tests after every prototype change
-3. **Parse error patterns** - Extract structured data from Factorio errors
-4. **Document patterns** - Each discovered issue helps future migrations
-5. **Version-specific comments** - Mark all migration changes with "Factorio 2.0:" comments
+2. **Test in GUI mode** - Some errors only appear in GUI (water reflections, etc.)
+3. **Test early, test often** - Run tests after every prototype change
+4. **Parse error patterns** - Extract structured data from Factorio errors
+5. **Document patterns** - Each discovered issue helps future migrations
+6. **Version-specific comments** - Mark all migration changes with "Factorio 2.0:" comments
+7. **Remove unused properties** - When deepcopying, remove GUI properties you don't need
 
 ## Known Limitations
 

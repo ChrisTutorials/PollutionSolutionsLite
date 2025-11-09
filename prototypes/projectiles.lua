@@ -334,16 +334,26 @@ end
 
 local toxicflame = util.table.deepcopy(data.raw["stream"]["flamethrower-fire-stream"])
 toxicflame.name = "toxic-flame-stream"
+
+-- Reset spine_animation sprite properties to match our 128x144 image
+-- Base game flamethrower-fire-stream has different dimensions
 toxicflame.spine_animation.filename = GRAPHICS
   .. "entity/flamethrower-fire-stream/flamethrower-fire-stream-spine.png"
-toxicflame.particle.filename = GRAPHICS
-  .. "entity/flamethrower-fire-stream/flamethrower-explosion.png"
+toxicflame.spine_animation.width = 128
+toxicflame.spine_animation.height = 144
+toxicflame.spine_animation.frame_count = 1
+toxicflame.spine_animation.line_length = 1
+toxicflame.spine_animation.frames = 1  -- CRITICAL: Base game has frames=multiple
+
 -- Reset particle sprite properties to match our 512x512 image
 -- Base game may have different sprite sheet coordinates that don't apply to our graphics
+toxicflame.particle.filename = GRAPHICS
+  .. "entity/flamethrower-fire-stream/flamethrower-explosion.png"
 toxicflame.particle.width = 512
 toxicflame.particle.height = 512
 toxicflame.particle.frame_count = 1
 toxicflame.particle.line_length = 1
+toxicflame.particle.frames = 1  -- CRITICAL: Explicit single frame
 toxicflame.particle.variation_count = 1  -- CRITICAL: Reset from base game's multi-variation count
 toxicflame.particle_horizontal_speed = data.raw["stream"]["flamethrower-fire-stream"].particle_horizontal_speed
   * 1.75
