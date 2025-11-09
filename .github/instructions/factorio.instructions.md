@@ -138,7 +138,67 @@ end
 
 ## Testing Philosophy
 
-1. **Test helper functions** - Unit test utility functions with mock data
-2. **Fail-fast tests** - Tests should use assertions and clear error messages
-3. **Version compatibility** - Test with different data structures to catch version issues
-4. **Mock Factorio structures accurately** - Ensure test mocks match actual game data structure
+### Use Real Factorio Validation (Headless Mode)
+
+**DO NOT** mock the Factorio API - use actual Factorio validation:
+
+```bash
+# Run Factorio 2.0 migration tests
+python tests/test_factorio_2_headless.py
+```
+
+**Benefits:**
+- Source of truth - tests against real game engine
+- Catches all API changes automatically
+- No mock maintenance burden
+- Tests actual runtime behavior
+- Validates graphics, sprites, and assets
+
+### Test-Driven Debugging
+
+When you encounter an error:
+
+1. **Reproduce in test** - Add test case that catches the issue
+2. **Document pattern** - Add error regex to test parser
+3. **Fix the issue** - Update mod code
+4. **Verify fix** - Test should now pass
+5. **Document migration** - Add to `docs/FACTORIO_2_MIGRATION_TESTS.md`
+
+### Testing Categories
+
+1. **Prototype Loading** - All prototypes load without errors (via `--dump-data`)
+2. **Runtime Validation** - Save file creation succeeds (via `--create`)
+3. **Graphics Validation** - Sprite rectangles within bounds, files exist
+4. **Recipe Validation** - Ingredients/results have proper format
+5. **Entity Validation** - Collision masks, pipe connections, emissions format
+
+### Test Coverage
+
+Current status: **10 distinct migration issues caught and documented**
+
+See:
+- `tests/test_factorio_2_headless.py` - Main test runner
+- `docs/FACTORIO_2_MIGRATION_TESTS.md` - Issue catalog
+- `tests/README_MIGRATION_TESTS.md` - Usage guide
+
+### CI/CD Integration
+
+Tests run in ~10 seconds, suitable for:
+- Pre-commit hooks
+- GitHub Actions
+- Local development workflow
+
+### Writing New Tests
+
+When discovering a new issue:
+
+```python
+# Add error pattern to test parser
+{
+    'pattern': r'your error regex here',
+    'issue': 'issue_identifier',
+    'description': 'Human-readable description'
+}
+```
+
+Then document in migration docs with before/after examples.

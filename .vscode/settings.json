@@ -1,8 +1,12 @@
 {
     "cSpell.words": [
         "factorio",
+        "fluidboxes",
+        "pollutioncollector",
+        "pollutioncollectors",
         "steamapps",
-        "valvesoftware"
+        "valvesoftware",
+        "xenomass"
     ],
     "[lua]": {
         "editor.defaultFormatter": "JohnnyMorganz.stylua",
@@ -11,7 +15,7 @@
     },
     "stylua.search_parent_directories": true,
     "Lua.diagnostics.disable": ["undefined-field"],
-    "Lua.diagnostics.globals": ["game", "script", "mods", "commands", "data", "util", "global", "defines", "log", "flare_stack"],
+    "Lua.diagnostics.globals": ["game", "script", "mods", "commands", "data", "util", "global", "defines", "log", "flare_stack", "serpent"],
     "Lua.workspace.library": ["${workspaceFolder}/factorio_annotations.lua"],
     "Lua.runtime.version": "Lua 5.1"
 }

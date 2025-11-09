@@ -70,6 +70,31 @@ class FactorioMigrationTester:
                 'issue': 'missing_result_type',
                 'description': 'Recipe result missing required "type" field (Factorio 2.0)'
             },
+            {
+                'pattern': r'The given sprite rectangle.*is outside the actual sprite size.*:\s*(.+\.png)',
+                'issue': 'sprite_rectangle_overflow',
+                'description': 'Sprite rectangle exceeds image bounds (graphics error)'
+            },
+            {
+                'pattern': r'compressed is unknown sprite flag',
+                'issue': 'deprecated_sprite_flag',
+                'description': 'Sprite flag "compressed" removed in Factorio 2.0'
+            },
+            {
+                'pattern': r'fuel_category.*is no longer supported.*fuel_categories',
+                'issue': 'fuel_category_plural',
+                'description': 'Energy sources use fuel_categories (plural) in Factorio 2.0'
+            },
+            {
+                'pattern': r'Usage of .type. which should be migrated to .flow_direction.',
+                'issue': 'pipe_flow_direction',
+                'description': 'Pipe connections use flow_direction not type (Factorio 2.0)'
+            },
+            {
+                'pattern': r'emissions_per_(minute|second).*must be.*dictionary',
+                'issue': 'emissions_format',
+                'description': 'Emissions must be dictionary with pollution types (Factorio 2.0)'
+            },
         ]
         
         for issue_def in migration_issues:

@@ -17,10 +17,10 @@ import argparse
 
 # Try to import yaml, fall back to json if not available
 try:
-    import yaml
+    import yaml  # type: ignore[import-not-found]
     HAS_YAML = True
 except ImportError:
-    import json
+    yaml = None  # type: ignore[assignment]
     HAS_YAML = False
     print("Warning: PyYAML not installed. Using fallback config. Install with: pip install pyyaml")
 
@@ -51,7 +51,7 @@ class FactorioValidator:
                 config_file = self.script_dir / "validate_config.example.yaml"
         
         if config_file.exists():
-            if HAS_YAML:
+            if HAS_YAML and yaml is not None:
                 with open(config_file) as f:
                     config = yaml.safe_load(f) or {}
             else:

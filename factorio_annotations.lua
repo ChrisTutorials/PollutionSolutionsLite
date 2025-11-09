@@ -8,6 +8,8 @@
   DO NOT require this file in production code - it's only for IDE support
 ]]
 
+---@diagnostic disable: duplicate-doc-alias
+
 -- Type aliases for Factorio objects
 ---@alias EventData table
 ---@alias LuaSurface table

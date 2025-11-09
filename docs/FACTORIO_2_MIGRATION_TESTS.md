@@ -6,7 +6,8 @@ This document catalogs all Factorio 2.0 API migration issues discovered during t
 
 **Test Tool**: `tests/test_factorio_2_headless.py`  
 **Approach**: Uses actual Factorio headless mode (source of truth) rather than mocking  
-**Benefits**: 
+
+**Benefits**:
 - Catches real Factorio validation errors
 - No need to maintain complex mocks
 - Tests against actual game engine
@@ -16,7 +17,9 @@ This document catalogs all Factorio 2.0 API migration issues discovered during t
 ### 1. Recipe Ingredient Format (Critical)
 
 **Issue**: Factorio 2.0 requires explicit `type` field in all recipe ingredients  
+
 **Old Format**:
+
 ```lua
 ingredients = {
   {name = "iron-plate", amount = 10}
@@ -257,13 +260,49 @@ When discovering a new migration issue:
 3. **Verify fix** - Ensure test catches the issue before and after fix
 4. **Cross-reference** - Link issue to specific files and line numbers
 
+---
+
+### 11. Sprite Rectangle Overflow (Critical)
+
+**Issue**: When copying base game entities with custom graphics, sprite sheet coordinates may not match new image dimensions  
+**Old Approach** (causes error):
+```lua
+-- Just change filename, keep base game sprite coordinates
+toxicflame.particle.filename = GRAPHICS .. "entity/flamethrower-fire-stream/flamethrower-explosion.png"
+-- Base game may have coordinates like: left_top=0x432, right_bottom=124x540
+-- But our image is only 512x512!
+```
+
+**New Approach** (works correctly):
+```lua
+-- Change filename AND reset sprite properties
+toxicflame.particle.filename = GRAPHICS .. "entity/flamethrower-fire-stream/flamethrower-explosion.png"
+toxicflame.particle.width = 512
+toxicflame.particle.height = 512
+toxicflame.particle.frame_count = 1
+toxicflame.particle.line_length = 1
+```
+
+**Test Case**: Validates sprite rectangles don't exceed image bounds  
+**Pattern**: `The given sprite rectangle.*is outside the actual sprite size`  
+**Files Affected**: `prototypes/projectiles.lua` (toxic-flame-stream)
+
+**Root Cause**: When using `util.table.deepcopy()` on base game entities and only changing the filename, you inherit the original sprite sheet layout (frame count, dimensions, coordinates) which may not match your custom graphics.
+
+**Prevention**: Always verify/reset sprite dimensions when using custom graphics:
+- `width` and `height` - Match your actual image dimensions
+- `frame_count` - Number of animation frames in your sprite sheet
+- `line_length` - Frames per row in sprite sheet layout
+
+---
+
 ## Summary Statistics
 
-- **Total Issues Found**: 10
+- **Total Issues Found**: 11
 - **Files Modified**: 5
   - `prototypes/entity.lua`
   - `prototypes/pollutioncollector.lua`
-  - `prototypes/projectiles.lua`
+  - `prototypes/projectiles.lua` (multiple issues)
   - `data-final-fixes.lua`
   - `prototypes/recipe.lua`
 - **Test Success Rate**: 100% (all issues caught by headless validation)

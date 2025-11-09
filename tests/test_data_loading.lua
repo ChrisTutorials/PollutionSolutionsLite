@@ -63,17 +63,19 @@ function tests.test_helper_functions_fail_fast()
 
   -- setLayerGraphics should fail on nil layer
   local success, err = pcall(function()
+    ---@diagnostic disable-next-line: param-type-mismatch
     setLayerGraphics(nil, "test.png", nil)
   end)
   TestUtils.assert(not success, "Should fail with nil layer")
-  TestUtils.assert(string.find(err, "Layer cannot be nil"), "Should have meaningful error")
+  TestUtils.assert(string.find(tostring(err), "Layer cannot be nil") ~= nil, "Should have meaningful error")
 
   -- setAllDirectionalGraphics should fail on nil structure
   local success2, err2 = pcall(function()
+    ---@diagnostic disable-next-line: param-type-mismatch
     setAllDirectionalGraphics(nil, "test/")
   end)
   TestUtils.assert(not success2, "Should fail with nil structure")
-  TestUtils.assert(string.find(err2, "Structure cannot be nil"), "Should have meaningful error")
+  TestUtils.assert(string.find(tostring(err2), "Structure cannot be nil") ~= nil, "Should have meaningful error")
 end
 
 function tests.test_missing_function_detection()
@@ -98,8 +100,10 @@ function tests.test_missing_function_detection()
 
   local success, err = simulate_entity_load_without_util()
   TestUtils.assert(not success, "Should fail when function is not defined")
+  -- Cast err to string for type safety - pcall returns unknown type
+  local errStr = tostring(err)
   TestUtils.assert(
-    string.find(err, "nil value") or string.find(err, "setLayerGraphics"),
+    (string.find(errStr, "nil value") ~= nil) or (string.find(errStr, "setLayerGraphics") ~= nil),
     "Error should mention the missing function"
   )
 end

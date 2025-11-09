@@ -14,7 +14,8 @@
       "global",
       "defines",
       "log",
-      "flare_stack"
+      "flare_stack",
+      "serpent"
     ],
     "undefined-global": true,
     "unused-local": true,

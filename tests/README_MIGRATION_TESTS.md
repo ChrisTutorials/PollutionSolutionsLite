@@ -57,7 +57,7 @@ Rather than mocking Factorio's API (complex, error-prone, outdated quickly), we:
 
 ## Migration Issues Caught
 
-The test suite has discovered and validated fixes for **10 distinct API migration issues**:
+The test suite has discovered and validated fixes for **11 distinct API migration issues**:
 
 1. Recipe ingredient `type` field requirement
 2. Recipe result `type` field requirement
@@ -69,6 +69,7 @@ The test suite has discovered and validated fixes for **10 distinct API migratio
 8. Energy source `fuel_categories` plural
 9. Item `fuel_category` singular
 10. Barrel system `barrel` vs `empty-barrel`
+11. Sprite rectangle overflow (custom graphics dimensions)
 
 See [FACTORIO_2_MIGRATION_TESTS.md](../docs/FACTORIO_2_MIGRATION_TESTS.md) for detailed documentation of each issue.
 

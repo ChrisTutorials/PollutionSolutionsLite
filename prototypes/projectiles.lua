@@ -338,6 +338,12 @@ toxicflame.spine_animation.filename = GRAPHICS
   .. "entity/flamethrower-fire-stream/flamethrower-fire-stream-spine.png"
 toxicflame.particle.filename = GRAPHICS
   .. "entity/flamethrower-fire-stream/flamethrower-explosion.png"
+-- Reset particle sprite properties to match our 512x512 image
+-- Base game may have different sprite sheet coordinates that don't apply to our graphics
+toxicflame.particle.width = 512
+toxicflame.particle.height = 512
+toxicflame.particle.frame_count = 1
+toxicflame.particle.line_length = 1
 toxicflame.particle_horizontal_speed = data.raw["stream"]["flamethrower-fire-stream"].particle_horizontal_speed
   * 1.75
 
