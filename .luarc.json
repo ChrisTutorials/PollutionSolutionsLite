@@ -46,7 +46,16 @@
       "FILTER_PER_LIQUIFY",
       "WATER_PER_FILTER_PERCENT",
       "BLUE_XENOMASS_PER_RED_XENOMASS",
-      "PollutionSolutions"
+      "PollutionSolutions",
+      "TestUtils",
+      "setLayerGraphics",
+      "setDirectionalGraphics",
+      "setAllDirectionalGraphics",
+      "copyData",
+      "makeNewDataFromData",
+      "makeNewEntityFromData",
+      "makeNewItemFromData",
+      "Set"
     ],
     "undefined-global": true,
     "unused-local": true,
