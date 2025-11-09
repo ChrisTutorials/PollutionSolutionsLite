@@ -12,24 +12,27 @@ pollutioncollector.minable.result = "pollutioncollector"
 pollutioncollector.crafting_categories = { "pollution" }
 pollutioncollector.icon = GRAPHICS .. "icons/pollution-collector.png"
 pollutioncollector.icon_size = 64
--- Replace main entity sprite with clean single-frame sprite
--- CRITICAL: Storage-tank handles rotation internally - just provide picture
--- Don't override entire pictures structure; let storage-tank handle rotation
--- Just set the picture.layers with correct sprite configuration
-pollutioncollector.pictures.picture.layers[1].filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png"
-pollutioncollector.pictures.picture.layers[1].width = 220
-pollutioncollector.pictures.picture.layers[1].height = 108
-pollutioncollector.pictures.picture.layers[1].frames = 1
-pollutioncollector.pictures.picture.layers[1].frame_count = 1
-pollutioncollector.pictures.picture.layers[1].line_length = 1
-
--- Add HR version if it exists
-if pollutioncollector.pictures.picture.layers[1].hr_version then
-  pollutioncollector.pictures.picture.layers[1].hr_version.filename = GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png"
-  pollutioncollector.pictures.picture.layers[1].hr_version.width = 440
-  pollutioncollector.pictures.picture.layers[1].hr_version.height = 216
-  pollutioncollector.pictures.picture.layers[1].hr_version.scale = 0.5
-end
+-- Replace main entity sprite with pollution collector sprite
+-- Storage-tank entity handles 4-way rotation automatically
+pollutioncollector.pictures = {
+  picture = {
+    sheets = {
+      {
+        filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
+        priority = "high",
+        width = 220,
+        height = 108,
+        hr_version = {
+          filename = GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png",
+          priority = "high",
+          width = 440,
+          height = 216,
+          scale = 0.5,
+        },
+      },
+    },
+  },
+}
 
 -- Remove inherited GUI-only properties that have sprite references
 -- These would cause sprite rectangle errors as they reference wrong dimensions
