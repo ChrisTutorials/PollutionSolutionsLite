@@ -224,7 +224,7 @@ function EntityDied(event)
     local blueAverage = settings.global["zpollution-blue-per-alien"].value
     --[[
     -- Disabled: Rampant mod compatibility (kept for reference)
-    if game.active_mods["Rampant"] ~= nil then
+    if mods and mods["Rampant"] then
       blueAverage = blueAverage * 0.5
     end
     --]]
@@ -266,13 +266,13 @@ function EntityDied(event)
           event.cause.type .. " from force " .. event.force.name .. " killed " .. alien.name .. "."
         )
       end
-      -- Factorio 2.0+ API: spill_item_stack uses single table argument with position and items
-      alien.surface.spill_item_stack({position = alien.position, items = loot})
+      -- Factorio 2.0+ API: spill_item_stack requires items as array: {{name=..., count=...}}
+      alien.surface.spill_item_stack({position = alien.position, items = {loot}})
       return
     else
       -- Normal kills spawn neutral loot
-      -- Factorio 2.0+ API: spill_item_stack uses single table argument with position and items
-      alien.surface.spill_item_stack({position = alien.position, items = loot})
+      -- Factorio 2.0+ API: spill_item_stack requires items as array: {{name=..., count=...}}
+      alien.surface.spill_item_stack({position = alien.position, items = {loot}})
     end
   end
 end
@@ -293,8 +293,8 @@ function IsAlienForce(entity)
     return true
   end
 
-  -- Biter factions mod compatibility
-  if game.active_mods["biter_factions"] ~= nil then
+  -- Biter factions mod compatibility (Factorio 2.0 API: use mods table instead of active_mods)
+  if mods and mods["biter_factions"] then
     return string.find(force_name, "biter_faction") ~= nil
   end
 
