@@ -19,6 +19,7 @@
   - K2 Flare Stack: Increases pollution output when flaring pollution fluids
 ]]
 
+require("util")  -- Load utility functions before prototypes
 require("prototypes.category")
 require("prototypes.projectiles")
 require("prototypes.entity")

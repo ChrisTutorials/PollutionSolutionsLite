@@ -82,6 +82,22 @@ else
 end
 
 print()
+
+-- Run test_data_loading
+print("Loading test_data_loading.lua...")
+local success_data_loading, error_data_loading = pcall(function()
+  local test_data_loading = require("tests.test_data_loading")
+end)
+
+if not success_data_loading then
+  print("✗ FAILED to load test_data_loading: " .. tostring(error_data_loading))
+  testResults.totalFailed = testResults.totalFailed + 1
+else
+  print("✓ test_data_loading completed successfully")
+  testResults.totalPassed = testResults.totalPassed + 1
+end
+
+print()
 print("========================================")
 print("Test Execution Summary")
 print("========================================")
