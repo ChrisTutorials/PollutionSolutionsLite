@@ -206,11 +206,41 @@ class ModExporter:
         except Exception:
             return '0.0.0'
     
+    def get_next_version(self, base_version: str, dest_dir: Path) -> str:
+        """Get next incremental version (e.g., 1.1.0 -> 1.1.0.1 -> 1.1.0.2)"""
+        # Find all existing zips with this base version
+        pattern = f"{self.mod_name}_{base_version}*.zip"
+        existing_zips = list(dest_dir.glob(pattern))
+        
+        if not existing_zips:
+            # First export of this version
+            return f"{base_version}.1"
+        
+        # Find highest incremental number
+        max_increment = 0
+        for zip_file in existing_zips:
+            # Extract version from filename (e.g., "PollutionSolutionsLite_1.1.0.2.zip")
+            filename = zip_file.stem  # Remove .zip
+            version_part = filename.replace(f"{self.mod_name}_", "")
+            
+            # Try to parse incremental version
+            parts = version_part.split('.')
+            if len(parts) > 3:
+                try:
+                    increment = int(parts[3])
+                    max_increment = max(max_increment, increment)
+                except ValueError:
+                    pass
+        
+        return f"{base_version}.{max_increment + 1}"
+    
     def create_archive(self, mod_dest: Path) -> bool:
-        """Create zip archive of the exported mod"""
-        version = self.get_mod_version()
+        """Create zip archive of the exported mod with incremental versioning"""
+        base_version = self.get_mod_version()
+        dest_parent = mod_dest.parent
+        version = self.get_next_version(base_version, dest_parent)
         archive_name = f"{self.mod_name}_{version}.zip"
-        archive_path = mod_dest.parent / archive_name
+        archive_path = dest_parent / archive_name
         
         print(f"\nCreating archive: {archive_name}")
         try:
