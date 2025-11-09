@@ -50,7 +50,19 @@
         "alien-ooze",
         "splinter",
         "burnfluid",
-        "addBurnFluidEmissionsMultiplier"
+        "addBurnFluidEmissionsMultiplier",
+        "effectivity",
+        "flamethrower",
+        "emitter",
+        "corpse",
+        "worm",
+        "spawner",
+        "diminish",
+        "liquify",
+        "liquefy",
+        "emission",
+        "barebones",
+        "projectile"
     ],
     "[lua]": {
         "editor.defaultFormatter": "JohnnyMorganz.stylua",
