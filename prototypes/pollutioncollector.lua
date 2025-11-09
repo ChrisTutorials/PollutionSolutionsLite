@@ -13,40 +13,23 @@ pollutioncollector.crafting_categories = { "pollution" }
 pollutioncollector.icon = GRAPHICS .. "icons/pollution-collector.png"
 pollutioncollector.icon_size = 64
 -- Replace main entity sprite with clean single-frame sprite
--- CRITICAL: Don't use deepcopy for pictures - inherited `frames` property causes issues
--- Storage-tank has frames=2, which makes sprites read 2x width horizontally
--- Storage-tank supports 4 rotations (north, east, south, west)
--- Since we only have one sprite, use it for all 4 directions with HR support
-local pollutionCollectorSprite = {
-  sheets = {
-    {
-      filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
-      width = 220,
-      height = 108,
-      frames = 1,
-      frame_count = 1,
-      line_length = 1,
-      hr_version = {
-        filename = GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png",
-        width = 440,
-        height = 216,
-        frames = 1,
-        frame_count = 1,
-        line_length = 1,
-        scale = 0.5,
-      },
-    },
-  },
-}
+-- CRITICAL: Storage-tank handles rotation internally - just provide picture
+-- Don't override entire pictures structure; let storage-tank handle rotation
+-- Just set the picture.layers with correct sprite configuration
+pollutioncollector.pictures.picture.layers[1].filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png"
+pollutioncollector.pictures.picture.layers[1].width = 220
+pollutioncollector.pictures.picture.layers[1].height = 108
+pollutioncollector.pictures.picture.layers[1].frames = 1
+pollutioncollector.pictures.picture.layers[1].frame_count = 1
+pollutioncollector.pictures.picture.layers[1].line_length = 1
 
-pollutioncollector.pictures = {
-  picture = {
-    north = pollutionCollectorSprite,
-    east = pollutionCollectorSprite,
-    south = pollutionCollectorSprite,
-    west = pollutionCollectorSprite,
-  },
-}
+-- Add HR version if it exists
+if pollutioncollector.pictures.picture.layers[1].hr_version then
+  pollutioncollector.pictures.picture.layers[1].hr_version.filename = GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png"
+  pollutioncollector.pictures.picture.layers[1].hr_version.width = 440
+  pollutioncollector.pictures.picture.layers[1].hr_version.height = 216
+  pollutioncollector.pictures.picture.layers[1].hr_version.scale = 0.5
+end
 
 -- Remove inherited GUI-only properties that have sprite references
 -- These would cause sprite rectangle errors as they reference wrong dimensions
