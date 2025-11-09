@@ -14,6 +14,7 @@ pollutioncollector.icon = GRAPHICS .. "icons/pollution-collector.png"
 pollutioncollector.icon_size = 64
 -- Replace main entity sprite with pollution collector sprite
 -- Storage-tank entity handles 4-way rotation automatically
+-- NOTE: HR version must be separate sheet with its own size (2x dimensions)
 pollutioncollector.pictures = {
   picture = {
     sheets = {
@@ -22,13 +23,13 @@ pollutioncollector.pictures = {
         priority = "high",
         width = 220,
         height = 108,
-        hr_version = {
-          filename = GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png",
-          priority = "high",
-          width = 440,
-          height = 216,
-          scale = 0.5,
-        },
+      },
+      {
+        filename = GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png",
+        priority = "high",
+        width = 440,
+        height = 216,
+        scale = 0.5,
       },
     },
   },
