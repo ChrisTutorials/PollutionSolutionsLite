@@ -126,18 +126,26 @@ function OnBuiltEntity(event)
 end
 
 ---Handle entity removal (mining, destruction, death)
----Disperses stored pollution before entity is removed
+---Only manages removal of mod-specific entities (toxic dumps, collectors)
+---Pipes and storage tanks use base game fluid mechanics
 ---@param event EventData Event data containing entity
 function OnEntityPreRemoved(event)
-  if event.entity then
-    if IsToxicDump(event.entity) then
-      RemoveToxicDump(event.entity)
-    elseif IsPollutionCollector(event.entity) then
-      RemovePollutionCollector(event.entity)
-    else
-      -- For any other entity with fluid, disperse pollution to prevent deletion
-      DisperseCollectedPollution(event.entity, event.entity.surface, event.entity.position)
-    end
+  -- CRITICAL FIX: Only handle mod-specific entities
+  -- Do NOT disperse pollution for pipes or generic fluid entities
+  -- Base game handles their fluid mechanics
+  
+  if not event.entity then
+    return
+  end
+  
+  if IsToxicDump(event.entity) then
+    RemoveToxicDump(event.entity)
+    return
+  end
+  
+  if IsPollutionCollector(event.entity) then
+    RemovePollutionCollector(event.entity)
+    return
   end
 end
 
