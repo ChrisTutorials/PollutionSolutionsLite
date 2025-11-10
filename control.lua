@@ -133,16 +133,16 @@ function OnEntityPreRemoved(event)
   -- CRITICAL FIX: Only handle mod-specific entities
   -- Do NOT disperse pollution for pipes or generic fluid entities
   -- Base game handles their fluid mechanics
-  
+
   if not event.entity then
     return
   end
-  
+
   if IsToxicDump(event.entity) then
     RemoveToxicDump(event.entity)
     return
   end
-  
+
   if IsPollutionCollector(event.entity) then
     RemovePollutionCollector(event.entity)
     return

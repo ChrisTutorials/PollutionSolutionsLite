@@ -67,7 +67,6 @@ class ModExporter:
             '.luarc.json',
             '.markdownlintignore',
             '.stylua.toml',
-            'PROJECT_STRUCTURE.md',
             'validate_config.sh',
             '.internal-bugs',
             '*.zip',
