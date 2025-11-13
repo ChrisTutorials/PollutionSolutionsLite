@@ -30,7 +30,7 @@ incinerator.picture.layers[1].height = 158
 incinerator.picture.layers[1].frames = 1 -- CRITICAL: nuclear-reactor has multiple frames
 incinerator.picture.layers[1].frame_count = 1
 incinerator.picture.layers[1].line_length = 1
-incinerator.picture.layers[1].scale = 1.5 -- Scale up sprite to match smoke animation size
+incinerator.picture.layers[1].scale = 1.0 -- Use normal scale for better proportions
 setLayerGraphics(
   incinerator.picture.layers[1],
   GRAPHICS .. "entity/incinerator/incinerator.png",

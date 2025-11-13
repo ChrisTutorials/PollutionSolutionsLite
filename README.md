@@ -26,6 +26,7 @@ Pollution Solutions Lite adds a pollution management system to Factorio that cre
   - Collects from a 3x3 grid of chunks (96x96 tiles)
   - Converts air pollution into "Polluted Air" fluid
   - Configurable collection rate and minimum pollution threshold
+  - **How to use**: After placing, open the collector and select the "collect-pollution" recipe (it has no ingredients - it collects from air)
 
 #### 2. Pollution Processing
 
@@ -117,11 +118,12 @@ Incompatible with:
 
 ## Tips & Tricks
 
-1. **Early Game**: Don't worry about pollution collection until biters become aggressive
-2. **Mid Game**: Set up collectors near high-pollution areas (smelting, oil processing)
-3. **Late Game**: Use incinerators as auxiliary power, toxic turrets for defense
-4. **Efficiency**: Balance collector placement to maintain pollution below biter evolution thresholds
-5. **Storage**: Toxic sludge is 10x more space-efficient than polluted air
+1. **Using Pollution Collectors**: After placing a collector, click on it and manually select the "collect-pollution" recipe. It will show "no ingredients" because it collects pollution from the air - this is correct! Connect pipes to output the polluted-air fluid.
+2. **Early Game**: Don't worry about pollution collection until biters become aggressive
+3. **Mid Game**: Set up collectors near high-pollution areas (smelting, oil processing)
+4. **Late Game**: Use incinerators as auxiliary power, toxic turrets for defense
+5. **Efficiency**: Balance collector placement to maintain pollution below biter evolution thresholds
+6. **Storage**: Toxic sludge is 10x more space-efficient than polluted air
 
 ## For Developers
 

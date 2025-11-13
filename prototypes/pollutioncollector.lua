@@ -4,6 +4,29 @@ require("util")
 local hit_effects = require("__base__.prototypes.entity.hit-effects")
 local sounds = require("__base__.prototypes.entity.sounds")
 
+--[[
+  POLLUTION COLLECTOR - HOW TO USE IN FACTORIO 2.0
+  
+  The pollution collector is a furnace-type entity that:
+  1. Removes pollution from the surrounding chunks (negative emissions)
+  2. Produces "polluted-air" fluid as output
+  3. Requires the "collect-pollution" recipe to be set manually
+  
+  IMPORTANT: After placing the pollution collector, you MUST:
+  1. Click on the pollution collector to open its interface
+  2. Select the "collect-pollution" recipe from the recipe list
+  3. The recipe has no ingredients (it just collects air pollution)
+  4. Once the recipe is set, it will start producing polluted-air fluid
+  
+  The collector needs:
+  - Electric power (150kW)
+  - A pipe connection to output polluted-air fluid
+  - The "collect-pollution" recipe to be manually selected
+  
+  NOTE: The recipe will appear as "no ingredients" because it collects
+  pollution directly from the air, not from items.
+]]
+
 ------------
 -- Entity --
 ------------
@@ -81,6 +104,16 @@ local pollutioncollector = {
           line_length = 1,
           scale = COLLECTOR_SPRITE_SCALE,
           shift = { 0, 0 },
+          hr_version = {
+            filename = GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png",
+            priority = "high",
+            width = COLLECTOR_SPRITE_WIDTH * 2,  -- HR is 438x215 (2x the base)
+            height = COLLECTOR_SPRITE_HEIGHT * 2,
+            frame_count = 1,
+            line_length = 1,
+            scale = COLLECTOR_SPRITE_SCALE * 0.5,  -- HR scale is half
+            shift = { 0, 0 },
+          },
         },
       },
     },
@@ -121,13 +154,16 @@ pollutioncollector_item.icon_size = 64
 -- Pollution collection recipe: converts air pollution to polluted-air fluid
 -- This recipe runs continuously in the pollution collector furnace
 -- The negative emissions on the entity handle the actual pollution removal
+-- 
+-- IMPORTANT: This recipe must be manually selected in the pollution collector's interface
+-- It shows "no ingredients" because it collects pollution directly from the air
 local collect_pollution_recipe = {
   type = "recipe",
   name = "collect-pollution",
   category = "atmospheric-filtration",
   enabled = false,
   energy_required = 60,  -- 60 seconds per cycle
-  ingredients = {},  -- No input required
+  ingredients = {},  -- No input required - collects from air
   results = {
     { type = "fluid", name = "polluted-air", amount = 40 },  -- Produces 40 units of polluted-air
   },
