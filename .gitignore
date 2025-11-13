@@ -9,3 +9,4 @@ scripts/__pycache__/
 Thumbs.db
 .internal-bugs/
 *.zip
+factorio-export/
