@@ -23,4 +23,11 @@ data:extend({
     type = "recipe-category",
     name = "pollution",
   },
+
+  -- Recipe category for atmospheric filtration (pollution collection)
+  -- Used by pollution collectors to convert air pollution to fluid
+  {
+    type = "recipe-category",
+    name = "atmospheric-filtration",
+  },
 })

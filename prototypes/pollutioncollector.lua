@@ -1,6 +1,9 @@
 require("constants")
 require("util")
 
+local hit_effects = require("__base__.prototypes.entity.hit-effects")
+local sounds = require("__base__.prototypes.entity.sounds")
+
 ------------
 -- Entity --
 ------------
@@ -10,61 +13,90 @@ local COLLECTOR_SPRITE_WIDTH = 220
 local COLLECTOR_SPRITE_HEIGHT = 108
 local COLLECTOR_SPRITE_SCALE = 0.4
 
-local pollutioncollector = util.table.deepcopy(data.raw["storage-tank"]["storage-tank"])
-pollutioncollector.name = "pollutioncollector"
-pollutioncollector.order = "z"
-pollutioncollector.minable.result = "pollutioncollector"
-pollutioncollector.crafting_categories = { "pollution" }
-pollutioncollector.icon = GRAPHICS .. "icons/pollution-collector.png"
-pollutioncollector.icon_size = 64
-
--- Replace main entity sprite with pollution collector sprite
--- Storage-tank entity handles 4-way rotation automatically
--- NOTE: Single sprite used for all 4 rotations - storage-tank repeats it
--- CRITICAL: Override all inherited picture data to prevent frame misinterpretation
-assert(
-  pollutioncollector.pictures and pollutioncollector.pictures.picture,
-  "Collector pictures not found"
-)
-
-local base_sheet = {
-  filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
-  priority = "high",
-  width = COLLECTOR_SPRITE_WIDTH,
-  height = COLLECTOR_SPRITE_HEIGHT,
-  frames = 1,
-  frame_count = 1,
-  line_length = 1,
-  scale = COLLECTOR_SPRITE_SCALE,
-}
-
-pollutioncollector.pictures = {
-  picture = {
-    sheets = { base_sheet },
+-- Use furnace entity type with negative emissions to collect pollution
+-- This uses Factorio's built-in pollution system instead of scripting
+local pollutioncollector = {
+  type = "furnace",
+  name = "pollutioncollector",
+  icon = GRAPHICS .. "icons/pollution-collector.png",
+  icon_size = 64,
+  flags = { "placeable-neutral", "placeable-player", "player-creation" },
+  minable = { mining_time = 0.5, result = "pollutioncollector" },
+  fast_replaceable_group = nil,
+  max_health = 350,
+  corpse = "big-remnants",
+  dying_explosion = "medium-explosion",
+  resistances = {
+    { type = "fire", percent = 70 },
+  },
+  collision_box = { { -1.2, -1.2 }, { 1.2, 1.2 } },
+  selection_box = { { -1.5, -1.5 }, { 1.5, 1.5 } },
+  damaged_trigger_effect = hit_effects.entity(),
+  
+  -- Crafting configuration
+  crafting_categories = { "atmospheric-filtration" },
+  crafting_speed = 1,
+  source_inventory_size = 0,  -- No input items needed
+  result_inventory_size = 0,  -- No output items produced
+  module_slots = 0,
+  allowed_effects = { "consumption", "speed", "pollution" },
+  show_recipe_icon = false,
+  show_recipe_icon_on_map = false,
+  
+  -- Energy configuration with negative emissions (pollution collection)
+  energy_source = {
+    type = "electric",
+    usage_priority = "secondary-input",
+    emissions_per_minute = {
+      pollution = -40,  -- Removes 40 pollution per minute from the chunk
+    },
+  },
+  energy_usage = "150kW",
+  
+  -- Fluid output for collected pollution
+  fluid_boxes = {
+    {
+      production_type = "output",
+      pipe_connections = {
+        { flow_direction = "output", direction = defines.direction.north, position = {0, -1} },
+        { flow_direction = "output", direction = defines.direction.south, position = {0, 1} },
+        { flow_direction = "output", direction = defines.direction.east, position = {1, 0} },
+        { flow_direction = "output", direction = defines.direction.west, position = {-1, 0} },
+      },
+      filter = "polluted-air",
+    },
+  },
+  
+  -- Graphics
+  graphics_set = {
+    animation = {
+      layers = {
+        {
+          filename = GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
+          priority = "high",
+          width = COLLECTOR_SPRITE_WIDTH,
+          height = COLLECTOR_SPRITE_HEIGHT,
+          frame_count = 1,
+          line_length = 1,
+          scale = COLLECTOR_SPRITE_SCALE,
+          shift = { 0, 0 },
+        },
+      },
+    },
+  },
+  
+  -- Sounds
+  impact_category = "metal",
+  open_sound = sounds.machine_open,
+  close_sound = sounds.machine_close,
+  working_sound = {
+    sound = { filename = "__base__/sound/accumulator-working.ogg", volume = 0.4 },
+    idle_sound = { filename = "__base__/sound/idle1.ogg", volume = 0.3 },
+    audible_distance_modifier = 0.5,
+    fade_in_ticks = 4,
+    fade_out_ticks = 20,
   },
 }
-
--- Set HR graphics if available (auto-scales to 2x dimensions with 0.5x scale)
-if base_sheet.hr_version then
-  setLayerGraphics(
-    base_sheet,
-    GRAPHICS .. "entity/pollution-collector/pollution-collector.png",
-    GRAPHICS .. "entity/pollution-collector/hr-pollution-collector.png"
-  )
-end
-
--- Remove inherited GUI-only properties that have sprite references
--- These would cause sprite rectangle errors as they reference wrong dimensions
-pollutioncollector.window_background = nil -- Storage tank GUI window
-pollutioncollector.fluid_background = nil -- Storage tank GUI fluid display
-pollutioncollector.water_reflection = nil -- Water reflection rendering (has variation_count=1)
-pollutioncollector.circuit_connector = nil -- Circuit network UI (optional removal)
-
-pollutioncollector.fluid_box.filter = "polluted-air"
-for i = 1, #pollutioncollector.fluid_box.pipe_connections, 1 do
-  pollutioncollector.fluid_box.pipe_connections[i].flow_direction = "input-output"
-end
-pollutioncollector.fluid_box.base_area = 10
 
 ----------
 -- Item --
@@ -81,9 +113,33 @@ pollutioncollector_item.icon_size = 64
 -- Extend --
 ------------
 
+------------
+-- Recipe --
+------------
+
+-- Pollution collection recipe: converts air pollution to polluted-air fluid
+-- This recipe runs continuously in the pollution collector furnace
+-- The negative emissions on the entity handle the actual pollution removal
+local collect_pollution_recipe = {
+  type = "recipe",
+  name = "collect-pollution",
+  category = "atmospheric-filtration",
+  enabled = false,
+  energy_required = 60,  -- 60 seconds per cycle
+  ingredients = {},  -- No input required
+  results = {
+    { type = "fluid", name = "polluted-air", amount = 40 },  -- Produces 40 units of polluted-air
+  },
+  icon = GRAPHICS .. "icons/pollution-collector.png",
+  icon_size = 64,
+  subgroup = "fluid-recipes",
+  order = "z[pollution]-a[collect]",
+}
+
 data:extend({
   pollutioncollector,
   pollutioncollector_item,
+  collect_pollution_recipe,
   {
     type = "recipe",
     name = "pollutioncollector",

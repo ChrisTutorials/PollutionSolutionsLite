@@ -22,6 +22,10 @@ data:extend({
       },
       {
         type = "unlock-recipe",
+        recipe = "collect-pollution",
+      },
+      {
+        type = "unlock-recipe",
         recipe = "dump-site",
       },
       {
