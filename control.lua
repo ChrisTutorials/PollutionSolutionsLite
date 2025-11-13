@@ -157,8 +157,11 @@ function OnTick(event)
   if game.tick % TOXIC_DUMP_INTERVAL == 0 then
     OnTick_ToxicDumps(event)
   end
-  -- Note: Pollution collectors no longer need tick processing
-  -- They use furnace entity with negative emissions (built-in Factorio mechanism)
+  -- Process pollution collectors to control recipe based on pollution levels
+  -- Check every 5 seconds to avoid performance impact
+  if game.tick % (5 * TICKS_PER_SECOND) == 0 then
+    OnTick_PollutionCollectors(event)
+  end
 end
 
 --===================--
@@ -513,10 +516,14 @@ end
 ---Add a pollution collector to global tracking
 ---@param entity LuaEntity The pollution collector entity to track
 function AddPollutionCollector(entity)
-  -- Pollution collectors now use furnace entity with negative emissions
-  -- No need for complex tracking - Factorio handles pollution removal automatically
-  -- We only track for entity destruction handling (fluid dispersal)
+  -- Track collectors for recipe control and destruction handling
   storage.collectors[entity.unit_number] = entity
+  
+  -- Set initial recipe if pollution exists
+  local pollution = entity.surface.get_pollution(entity.position)
+  if pollution > 0 then
+    entity.set_recipe("collect-pollution")
+  end
 end
 
 ---Remove a pollution collector from tracking and disperse its contents
@@ -527,7 +534,34 @@ function RemovePollutionCollector(entity)
   storage.collectors[entity.unit_number] = nil
 end
 
--- NOTE: Pollution collection now handled by Factorio's built-in furnace mechanics
--- The furnace entity has negative emissions which automatically removes pollution
--- The collect-pollution recipe produces polluted-air fluid as output
--- No scripting required for the core collection mechanism!
+---Process all pollution collectors each tick interval
+---Controls whether collectors can run based on pollution levels
+---@param event EventData Event data from on_tick
+function OnTick_PollutionCollectors(event)
+  if storage.collectors == nil or not next(storage.collectors) then
+    return
+  end
+  
+  for unit_number, entity in pairs(storage.collectors) do
+    if entity.valid then
+      -- Check if there's pollution in the chunk
+      local pollution = entity.surface.get_pollution(entity.position)
+      local current_recipe = entity.get_recipe()
+      
+      if pollution > 0 then
+        -- Enable recipe if pollution exists
+        if not current_recipe or current_recipe.name ~= "collect-pollution" then
+          entity.set_recipe("collect-pollution")
+        end
+      else
+        -- Disable recipe if no pollution (stops production)
+        if current_recipe then
+          entity.set_recipe(nil)
+        end
+      end
+    else
+      -- Entity no longer exists, remove from tracking
+      storage.collectors[unit_number] = nil
+    end
+  end
+end

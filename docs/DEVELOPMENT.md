@@ -55,21 +55,27 @@ Central configuration:
 
 ### Pollution Collector
 
-The pollution collector system runs periodically to collect pollution from chunks:
+The pollution collector uses Factorio's built-in furnace entity with negative emissions to automatically collect pollution from the chunk it's placed in:
 
-- Runs every N ticks (configurable, default 60)
-- Scans 3x3 chunk grid for pollution
-- Calculates collectible amount: `(pollution - minimum) / divisor`
-- Converts to polluted-air fluid
+- Entity type: `furnace` with `atmospheric-filtration` crafting category
+- Negative emissions: -40 pollution per minute (removes pollution from chunk)
+- Recipe: `collect-pollution` (no inputs, produces polluted-air fluid)
+- Power: 150kW electric consumption
+- Output: Polluted-air fluid via output fluid boxes
 
 **Implementation Details:**
 
-- Registered in global.pollutioncollectors table
-- Each collector tracks its position and entity
-- Processes on tick event when interval expires
-- Checks each chunk in 3x3 grid (96x96 tiles total)
-- Respects minimum pollution threshold setting
-- Outputs to fluidbox [1]
+- Uses Factorio's native pollution system (no scripting required for collection)
+- The furnace entity automatically removes pollution via `emissions_per_minute.pollution = -40`
+- The `collect-pollution` recipe produces polluted-air fluid as output
+- Registered in global.collectors table for entity destruction handling
+- When destroyed, releases any stored polluted-air back to atmosphere
+- Connects to pipe systems via 4-way fluid box connections (output only)
+
+**Architecture Change (v1.1.0030):**
+- Previous version: storage-tank entity with scripted chunk scanning and collection
+- Current version: furnace entity with built-in negative emissions (simpler, more reliable)
+- Based on reference mod: [atan-air-scrubbing](https://github.com/atanvarno69/atan-air-scrubbing)
 
 ### Toxic Dump
 
