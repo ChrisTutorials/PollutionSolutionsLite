@@ -34,15 +34,7 @@ The pollution collector wasn't working. The goal was to make it collect pollutio
 
 2. **Fluid Production**: The `collect-pollution` recipe produces 40 units of polluted-air per 60-second cycle.
 
-3. **Script Control**: Every 5 seconds, a script checks:
-   ```lua
-   local pollution = entity.surface.get_pollution(entity.position)
-   if pollution > 0 then
-     entity.set_recipe("collect-pollution")  -- Enable collection
-   else
-     entity.set_recipe(nil)  -- Stop collection
-   end
-   ```
+3. **Manual Recipe Selection** (UPDATED): The player must manually select the "collect-pollution" recipe in the furnace UI. Furnace entities do not support `set_recipe()` or `get_recipe()` methods - only assembling-machines do. The script only tracks collectors for destruction handling (pollution dispersal).
 
 4. **Output**: Polluted-air flows to connected pipes via output fluid boxes.
 
@@ -75,10 +67,10 @@ The `liquify-pollution` recipe remains identical:
    - Uses Factorio's built-in pollution system
    - More performant (no chunk scanning)
 
-2. **Recipe Control via Script**: Rather than pure built-in mechanics, we add script control to ensure:
-   - Recipe only runs when pollution exists
-   - No "free" fluid generation
-   - Proper resource tracking
+2. **Manual Recipe Selection** (UPDATED v1.1.34): Furnace entities cannot be controlled via Lua scripts (`set_recipe()` only works on assembling-machines). Players must manually select the recipe in the UI. This is standard Factorio furnace behavior.
+   - Recipe runs whenever it has power and output capacity
+   - Player controls when collection starts/stops
+   - No automatic recipe management needed
 
 3. **Settings Compatibility**: The furnace approach doesn't use the old settings:
    - `zpollution-collection-interval`: Not used (furnace runs continuously)
