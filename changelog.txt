@@ -1,3 +1,18 @@
+Version: 1.1.0030
+Date: 2025.11.13
+  Notes:
+    - MAJOR FIX: Pollution collector now works properly
+    - Changed pollution collector from storage-tank to furnace entity type
+    - Pollution collection now uses Factorio's built-in negative emissions system
+    - Added atmospheric-filtration recipe category for pollution collection
+    - Added collect-pollution recipe (produces polluted-air from air pollution)
+    - Removed complex scripted pollution collection logic from control.lua
+    - Simplified architecture based on reference mod (atan-air-scrubbing)
+    - Added comprehensive test suite for pollution collector functionality
+    - Updated DEVELOPMENT.md with new architecture documentation
+    - Technology now unlocks both pollutioncollector building and collect-pollution recipe
+
+---------------------------------------------------------------------------------------------------
 Version: 1.1.0
 Date: 2025.11.09
   Notes:

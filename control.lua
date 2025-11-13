@@ -157,8 +157,9 @@ function OnTick(event)
   if game.tick % TOXIC_DUMP_INTERVAL == 0 then
     OnTick_ToxicDumps(event)
   end
-  -- Process pollution collectors based on mod settings (default: every 60 ticks)
-  if game.tick % settings.global["zpollution-collection-interval"].value == 0 then
+  -- Process pollution collectors to control recipe based on pollution levels
+  -- Check every 5 seconds to avoid performance impact
+  if game.tick % (5 * TICKS_PER_SECOND) == 0 then
     OnTick_PollutionCollectors(event)
   end
 end
@@ -515,108 +516,49 @@ end
 ---Add a pollution collector to global tracking
 ---@param entity LuaEntity The pollution collector entity to track
 function AddPollutionCollector(entity)
+  -- Track collectors for recipe control and destruction handling
   storage.collectors[entity.unit_number] = entity
+  
+  -- Set initial recipe if pollution exists
+  local pollution = entity.surface.get_pollution(entity.position)
+  if pollution > 0 then
+    entity.set_recipe("collect-pollution")
+  end
 end
 
 ---Remove a pollution collector from tracking and disperse its contents
 ---@param entity LuaEntity The pollution collector entity to remove
 function RemovePollutionCollector(entity)
+  -- When destroyed, release any collected pollution back into the air
   DisperseCollectedPollution(entity, entity.surface, entity.position)
   storage.collectors[entity.unit_number] = nil
 end
 
----Collect pollution from surrounding chunks and convert to polluted-air fluid
----Collectors pull pollution from a 3x3 grid of chunks centered on their position
----@param entity LuaEntity The pollution collector entity
----@param surface LuaSurface The surface to collect pollution from
-function CollectPollution(entity, surface)
-  -- Get or initialize fluid contents
-  local contents = entity.fluidbox[1]
-  if contents == nil then
-    contents = {
-      name = POLLUTED_AIR_NAME,
-      amount = 0.0000001,
-    }
-  end
-
-  --log("collecting at " .. GetPositionString(entity))
-
-  -- Calculate remaining capacity in pollution units
-  local capacityRemaining = (entity.fluidbox.get_capacity(1) - contents.amount) * EMISSIONS_PER_AIR
-  if capacityRemaining <= 0 then
-    return
-  end
-
-  -- Get pollution levels from 3x3 grid of neighboring chunks
-  local neighbors = GetPollutionNeighbors(surface, entity.position)
-
-  -- Calculate total collectible pollution
-  local maxCollection = 0
-  for x = -1, 1 do
-    for y = -1, 1 do
-      maxCollection = maxCollection + neighbors[x][y].maxCollection
-    end
-  end
-  --log("    maxCollection=" .. maxCollection)
-  if maxCollection <= 0 then
-    return
-  end
-
-  -- Scale collection if we can't fit all the pollution
-  local collectionMultiplier = 1
-  if capacityRemaining < maxCollection then
-    collectionMultiplier = capacityRemaining / maxCollection
-  end
-
-  -- Collect pollution from each neighboring chunk
-  for x = -1, 1 do
-    for y = -1, 1 do
-      local emissionChange = collectionMultiplier * neighbors[x][y].maxCollection
-      surface.pollute(neighbors[x][y].position, -1 * emissionChange) -- Remove pollution
-      contents.amount = contents.amount + (emissionChange / EMISSIONS_PER_AIR) -- Add fluid
-    end
-  end
-
-  entity.fluidbox[1] = contents
-end
-
----Get pollution data for neighboring chunks around a position
----Creates a 3x3 grid of chunk data, each chunk is 32x32 tiles
----@param surface LuaSurface The surface to check
----@param position MapPosition The center position
----@return table 2D array of neighbor data with pollution levels and max collection
-function GetPollutionNeighbors(surface, position)
-  local neighbors = {}
-  for nearX = -1, 1 do
-    neighbors[nearX] = {}
-    for nearY = -1, 1 do
-      neighbors[nearX][nearY] = {}
-      -- Calculate chunk center position (chunks are 32x32 tiles)
-      neighbors[nearX][nearY].position =
-        { x = position.x + 32 * nearX, y = position.y + 32 * nearY }
-      neighbors[nearX][nearY].pollution = surface.get_pollution(neighbors[nearX][nearY].position)
-      -- Calculate how much we can collect: (current - minimum) / collectors_needed
-      neighbors[nearX][nearY].maxCollection = math.max(
-        0,
-        (
-          neighbors[nearX][nearY].pollution
-          - settings.global["zpollution-pollution-remaining"].value
-        ) / settings.global["zpollution-collectors-required"].value
-      )
-    end
-  end
-  return neighbors
-end
-
 ---Process all pollution collectors each tick interval
+---Controls whether collectors can run based on pollution levels
 ---@param event EventData Event data from on_tick
 function OnTick_PollutionCollectors(event)
   if storage.collectors == nil or not next(storage.collectors) then
     return
   end
+  
   for unit_number, entity in pairs(storage.collectors) do
     if entity.valid then
-      CollectPollution(entity, entity.surface)
+      -- Check if there's pollution in the chunk
+      local pollution = entity.surface.get_pollution(entity.position)
+      local current_recipe = entity.get_recipe()
+      
+      if pollution > 0 then
+        -- Enable recipe if pollution exists
+        if not current_recipe or current_recipe.name ~= "collect-pollution" then
+          entity.set_recipe("collect-pollution")
+        end
+      else
+        -- Disable recipe if no pollution (stops production)
+        if current_recipe then
+          entity.set_recipe(nil)
+        end
+      end
     else
       -- Entity no longer exists, remove from tracking
       storage.collectors[unit_number] = nil
