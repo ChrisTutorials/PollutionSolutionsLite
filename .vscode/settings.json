@@ -47,6 +47,7 @@
         "pollutioncollectors",
         "projectile",
         "ptype",
+        "pycache",
         "rampant",
         "RampantIndustry",
         "spawner",
@@ -64,7 +65,8 @@
         "tynatyna",
         "valvesoftware",
         "worm",
-        "xenomass"
+        "xenomass",
+        "zpollution"
     ],
     "[lua]": {
         "editor.defaultFormatter": "JohnnyMorganz.stylua",

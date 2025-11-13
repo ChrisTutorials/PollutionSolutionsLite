@@ -113,7 +113,7 @@ SLUDGE_PER_FILTER = settings.startup["zpollution-sludge-per-filter"].value
 --==================--
 -- Recipe Constants --
 --==================--
--- Number of air filters needed per liquification recipe
+-- Number of air filters needed per liquefaction recipe
 FILTER_PER_LIQUIFY = 1
 
 -- Water consumption as percentage of filter amount
