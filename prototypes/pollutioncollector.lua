@@ -57,6 +57,7 @@ local pollutioncollector = {
   fluid_boxes = {
     {
       production_type = "output",
+      volume = 100,  -- Volume in units (100 units = 100 liters)
       pipe_connections = {
         { flow_direction = "output", direction = defines.direction.north, position = {0, -1} },
         { flow_direction = "output", direction = defines.direction.south, position = {0, 1} },
