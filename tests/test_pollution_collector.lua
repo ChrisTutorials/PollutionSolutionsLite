@@ -193,13 +193,16 @@ end
 local runtime_test_notes = [[
 RUNTIME BEHAVIOR TESTS (require game environment):
 
-1. Test: Collector only runs recipe when pollution exists
+NOTE: As of this version, pollution collectors are furnace entities that require
+MANUAL recipe selection by the player. The collect-pollution recipe cannot be
+controlled via Lua scripts (furnaces don't support set_recipe/get_recipe).
+
+1. Test: Collector runs recipe when manually selected by player
    - Place collector in chunk with pollution > 0
-   - Verify recipe is active
-   - Remove all pollution from chunk
-   - Verify recipe stops (entity.get_recipe() returns nil)
-   - Re-add pollution
-   - Verify recipe resumes
+   - Manually select "collect-pollution" recipe in UI
+   - Verify recipe runs and produces fluid
+   - Note: Recipe will continue running as long as power and output capacity exist
+   - Recipe will NOT auto-stop when pollution reaches 0 (player must manually stop)
 
 2. Test: Pollution is removed from chunk
    - Place collector in polluted chunk

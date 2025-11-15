@@ -25,6 +25,13 @@ local sounds = require("__base__.prototypes.entity.sounds")
   
   NOTE: The recipe will appear as "no ingredients" because it collects
   pollution directly from the air, not from items.
+  
+  TECHNICAL NOTE: Because this is a furnace entity (not an assembling-machine),
+  the recipe cannot be controlled by scripts. The player must manually select
+  the recipe in the UI. The furnace will run the recipe whenever it has:
+  - Sufficient power
+  - Available output capacity (pipe system not full)
+  - The recipe manually selected
 ]]
 
 ------------
